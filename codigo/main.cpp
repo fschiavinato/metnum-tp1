@@ -7,8 +7,8 @@ int main() {
 	std::cout << "Hello World!";
 	std::cout << std::endl;
 
-	std::cout << "00";
 	OperacionesMatricialesTest::test01();	
+	OperacionesMatricialesTest::test02();	
 
 	return 0;
 }

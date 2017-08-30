@@ -34,14 +34,40 @@ void OperacionesMatricialesTest::test01(){
 	// El sistema contenido en esta matriz debe resolverse como <7;-18;10>
 	OperacionesMatricialesTest::imprimirMatriz(matriz,n,n+1);
 	cout<<"OperacionesMatricialesTest::test01 - 04 \n";
-	//double* resultadoEG = OperacionesMatriciales::eg(matriz,n);
+	double* resultadoEG = OperacionesMatriciales::eg(matriz,n);
 	cout<<"OperacionesMatricialesTest::test01 - 05 \n";
-	double* resultadoCH = OperacionesMatriciales::cholesky(matriz,n);
+	OperacionesMatricialesTest::imprimirVector(resultadoEG,n);
 	cout<<"OperacionesMatricialesTest::test01 - 06 \n";
-	//OperacionesMatricialesTest::imprimirVector(resultadoEG,n);
-	cout<<"OperacionesMatricialesTest::test01 - 07 \n";
+}
+
+void OperacionesMatricialesTest::test02(){
+	int n=3;
+	cout<<"OperacionesMatricialesTest::test02 - 00 \n";
+	vector<vector<double> > matriz = vector<vector<double> >(n);
+	for(int i=0;i<n;i++) matriz[i] = vector<double>(n+1);
+	matriz[0][0] = 1.0;				// Fila 0, columna 0
+	matriz[0][1] = 2.0;				// Fila 0, columna 1
+	matriz[0][2] = 3.0;				// Fila 0, columna 2
+	matriz[0][3] = 0.0;				// Fila 0, columna 3
+	matriz[1][0] = 2.0;
+	matriz[1][1] = 8.0;
+	matriz[1][2] = 4.0;
+	matriz[1][3] = 1.0;
+	matriz[2][0] = 3.0;
+	matriz[2][1] = 4.0;
+	matriz[2][2] = 11.0;
+	matriz[2][3] = 0.0;
+	// El sistema contenido en esta matriz debe resolverse como <-5/2;-1/2;1/2>
+	OperacionesMatricialesTest::imprimirMatriz(matriz,n,n+1);
+	cout<<"OperacionesMatricialesTest::test02 - 01 \n";
+	double* resultadoEG = OperacionesMatriciales::eg(matriz,n);
+	cout<<"OperacionesMatricialesTest::test02 - 02 \n";
+	OperacionesMatricialesTest::imprimirVector(resultadoEG,n);
+	cout<<"OperacionesMatricialesTest::test02 - 03 \n";
+	double* resultadoCH = OperacionesMatriciales::cholesky(matriz,n);
+	cout<<"OperacionesMatricialesTest::test02 - 04 \n";
 	OperacionesMatricialesTest::imprimirVector(resultadoCH,n);
-	cout<<"OperacionesMatricialesTest::test01 - 08 \n";
+	cout<<"OperacionesMatricialesTest::test02 - 05 \n";
 }
 
 
