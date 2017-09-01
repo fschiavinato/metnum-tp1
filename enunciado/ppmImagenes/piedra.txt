@@ -1,0 +1,14 @@
+12
+piedra/piedra.0.ppm
+piedra/piedra.1.ppm
+piedra/piedra.2.ppm
+piedra/piedra.3.ppm
+piedra/piedra.4.ppm
+piedra/piedra.5.ppm
+piedra/piedra.6.ppm
+piedra/piedra.7.ppm
+piedra/piedra.8.ppm
+piedra/piedra.9.ppm
+piedra/piedra.10.ppm
+piedra/piedra.11.ppm
+piedra/piedra.mask.ppm

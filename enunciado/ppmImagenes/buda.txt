@@ -1,0 +1,14 @@
+12
+buda/buda.0.ppm
+buda/buda.1.ppm
+buda/buda.2.ppm
+buda/buda.3.ppm
+buda/buda.4.ppm
+buda/buda.5.ppm
+buda/buda.6.ppm
+buda/buda.7.ppm
+buda/buda.8.ppm
+buda/buda.9.ppm
+buda/buda.10.ppm
+buda/buda.11.ppm
+buda/buda.mask.ppm
