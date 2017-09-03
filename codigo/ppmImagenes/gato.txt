@@ -1,0 +1,14 @@
+12
+gato/gato.0.ppm
+gato/gato.1.ppm
+gato/gato.2.ppm
+gato/gato.3.ppm
+gato/gato.4.ppm
+gato/gato.5.ppm
+gato/gato.6.ppm
+gato/gato.7.ppm
+gato/gato.8.ppm
+gato/gato.9.ppm
+gato/gato.10.ppm
+gato/gato.11.ppm
+gato/gato.mask.ppm
