@@ -1,0 +1,14 @@
+12
+caballo/caballo.0.ppm
+caballo/caballo.1.ppm
+caballo/caballo.2.ppm
+caballo/caballo.3.ppm
+caballo/caballo.4.ppm
+caballo/caballo.5.ppm
+caballo/caballo.6.ppm
+caballo/caballo.7.ppm
+caballo/caballo.8.ppm
+caballo/caballo.9.ppm
+caballo/caballo.10.ppm
+caballo/caballo.11.ppm
+caballo/caballo.mask.ppm

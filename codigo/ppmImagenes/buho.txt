@@ -1,0 +1,14 @@
+12
+buho/buho.0.ppm
+buho/buho.1.ppm
+buho/buho.2.ppm
+buho/buho.3.ppm
+buho/buho.4.ppm
+buho/buho.5.ppm
+buho/buho.6.ppm
+buho/buho.7.ppm
+buho/buho.8.ppm
+buho/buho.9.ppm
+buho/buho.10.ppm
+buho/buho.11.ppm
+buho/buho.mask.ppm

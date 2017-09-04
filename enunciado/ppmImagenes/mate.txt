@@ -1,0 +1,14 @@
+12
+mate/mate.0.ppm
+mate/mate.1.ppm
+mate/mate.2.ppm
+mate/mate.3.ppm
+mate/mate.4.ppm
+mate/mate.5.ppm
+mate/mate.6.ppm
+mate/mate.7.ppm
+mate/mate.8.ppm
+mate/mate.9.ppm
+mate/mate.10.ppm
+mate/mate.11.ppm
+mate/mate.mask.ppm
