@@ -1,10 +1,29 @@
-SOURCES=lu.cpp
+CC=gcc
+CXX=g++
+RM=rm -f
+CPPFLAGS=-g 
+LDFLAGS=-g 
+LDLIBS=-g
 
-all: 
-	g++ -g $(SOURCES)
+SRCS=calibracion.cpp main.cpp
+OBJS=$(subst .cpp,.o,$(SRCS))
 
-calibracion: 
-	g++ -g calibracion.cpp -o calibracion
+calibracion: calibracion.o
+	$(CXX) $(LDFLAGS) -o calibracion $< $(LDLIBS) 
+
+all: $(OBJS)
+	$(CXX) $(LDFLAGS) -o tool $(OBJS) $(LDLIBS) 
+
+depend: .depend
+
+.depend: $(SRCS)
+	$(RM) ./.depend
+	$(CXX) $(CPPFLAGS) -MM $^>>./.depend;
 
 clean:
-	rm calibracion
+	$(RM) $(OBJS)
+
+distclean: clean
+	$(RM) *~ .depend
+
+include .depend
