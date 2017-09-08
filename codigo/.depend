@@ -2,3 +2,4 @@ calibracion.o: calibracion.cpp ppmloader/ppmloader.cpp \
  ppmloader/ppmloader.h
 main.o: main.cpp OperacionesMatriciales.h \
  test/OperacionesMatricialesTest.h
+lu.o: lu.cpp
