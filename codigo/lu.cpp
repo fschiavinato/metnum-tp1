@@ -19,7 +19,7 @@ using namespace std;
     }\
     cout << endl;\
 
-void LU(vector<vector<double>> &A, int n, int m, vector<int> &p) {
+void descomponerLU(vector<vector<double>> &A, int n, int m, vector<int> &p) {
     vector<vector<double>> &L = A;
     vector<vector<double>> &U = A;
     for(int i = 0; i < n; i++) p[i] = i;
@@ -49,6 +49,29 @@ void LU(vector<vector<double>> &A, int n, int m, vector<int> &p) {
     }
 }
 
+void resolverLU(const vector<vector<double>> &A, int n, int m, const vector<int>& p, vector<double> &x, vector<double> &b) {
+    
+    for(int i = 0; i < n; i++) {
+        if(p[i] < i) {
+            swap(b[i], b[p[i]]);
+        }
+    }
+    
+    for(int i = 0; i < n; i++) {
+        for(int j = 0;  j < i; j++) {
+            b[i] += -A[i][j] * b[j];
+        }
+    }
+
+    for(int i = n - 1; i >= 0 ; i--) {
+        x[i] = 0;
+        for(int j = m - 1; j > i; j--) {
+            x[i] += A[i][j]*x[j];
+        }
+        x[i] = (b[i] - x[i]) / A[i][i];
+    }
+}
+
 int main() {
 
     vector<vector<double>> a(3);
@@ -56,6 +79,8 @@ int main() {
         a[i].resize(3);
     }
     vector<int> p(3);
+    vector<double> x(3);
+    vector<double> b(3);
     a[0][0] = 7;
     a[0][1] = 3;
     a[0][2] = -11;
@@ -65,8 +90,13 @@ int main() {
     a[2][0] = -11;
     a[2][1] = 2;
     a[2][2] = -2;
-    LU(a, 3, 3, p);
+    descomponerLU(a, 3, 3, p);
+    b[0] = 1319/34;
+    b[1] = 0;
+    b[2] = 0;
+    resolverLU(a, 3, 3, p, x, b);
     DEBUGM(a,3,3)
     DEBUGV(p,3)
+    DEBUGV(x,3)
 
 }
