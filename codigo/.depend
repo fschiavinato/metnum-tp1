@@ -1,5 +1,5 @@
-calibracion.o: calibracion.cpp ppmloader/ppmloader.cpp \
- ppmloader/ppmloader.h
-main.o: main.cpp OperacionesMatriciales.h \
- test/OperacionesMatricialesTest.h
-lu.o: lu.cpp
+calibracion.o: calibracion.cpp ppmloader/ppmloader.h macros.h
+main.o: main.cpp ppmloader/ppmloader.h OperacionesMatriciales.h \
+ test/OperacionesMatricialesTest.h lu.h macros.h
+lu.o: lu.cpp macros.h
+ppmloader.o: ppmloader/ppmloader.cpp ppmloader/ppmloader.h

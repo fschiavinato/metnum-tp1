@@ -1,14 +1,11 @@
-#include"ppmloader/ppmloader.cpp"
+#include"ppmloader/ppmloader.h"
 #include<cmath>
 #include<string>
 #include<iostream>
 #include<fstream>
+#include"macros.h"
 using namespace std;
 
-#define RED(a,i,j)  (unsigned int)a[i*width*3 + j*3 + 0]
-#define GREEN(a,i,j)  (unsigned int)a[i*width*3 + j*3 + 1]
-#define BLUE(a,i,j)  (unsigned int)a[i*width*3 + j*3 + 2]
-#define DEBUG(x) cerr << #x << " = " << x << endl;
 
 void CalcularGeometria(uchar* mascara, int height, int width, double& centrox, double& centroy, double& radio) {
     // Encerramos a la esfera en un cuadrado, la mitad de este es el centro.
@@ -46,7 +43,7 @@ void CalcularDireccionIluminacion(uchar* rgb, int height, int width, double cent
     int cant = 0;
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
-            int lumij = RED(rgb, i, j) + GREEN(rgb, i, j) + BLUE(rgb, i, j);
+            int lumij = ILUM(rgb,i,j);
             if(maxlum < lumij) {
                 maxlum = lumij;
                 sx = j;
@@ -80,7 +77,7 @@ void CalcularDireccionIluminacion(uchar* rgb, int height, int width, double cent
     
 }
 
-int main() {
+void calibrar() {
     uchar* data = NULL;
     int width = 0, height = 0;
     double centrox, centroy, radio;

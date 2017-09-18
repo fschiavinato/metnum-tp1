@@ -5,17 +5,14 @@ CPPFLAGS=-g
 LDFLAGS=-g 
 LDLIBS=-g
 
-SRCS=calibracion.cpp main.cpp lu.cpp
+SRCS=calibracion.cpp main.cpp lu.cpp ppmloader/ppmloader.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
-calibracion: calibracion.o
-	$(CXX) $(LDFLAGS) -o calibracion $< $(LDLIBS) 
+all: $(OBJS)
+	$(CXX) $(LDFLAGS) -o run $(OBJS) $(LDLIBS) 
 
 lu: lu.o
 	$(CXX) $(LDFLAGS) -o lu $< $(LDLIBS) 
-
-all: $(OBJS)
-	$(CXX) $(LDFLAGS) -o tool $(OBJS) $(LDLIBS) 
 
 depend: .depend
 

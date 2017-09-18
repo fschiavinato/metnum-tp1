@@ -1,3 +1,4 @@
+#include<cstddef>
 #ifndef __PPMPLOADER_H__
 #define __PPMLOADER_H__
 

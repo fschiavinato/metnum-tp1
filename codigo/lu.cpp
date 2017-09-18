@@ -1,23 +1,10 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include "macros.h"
 using namespace std;
 
    
-#define DEBUGM(a,n,m)  cout << #a << " = " << endl;\
-    for(int i = 0; i < n; i++) { \
-        for(int j = 0; j < m; j++) {\
-            cout << a[i][j] << " ";\
-        }\
-        cout << endl; \
-    } \
-    cout << endl;\
-
-#define DEBUGV(a,n)  cout << #a << " = " << endl;\
-    for(int i = 0; i < n; i++) {\
-        cout << a[i] << " ";\
-    }\
-    cout << endl;\
 
 void descomponerLU(vector<vector<double>> &A, int n, int m, vector<int> &p) {
     vector<vector<double>> &L = A;
@@ -72,7 +59,7 @@ void resolverLU(const vector<vector<double>> &A, int n, int m, const vector<int>
     }
 }
 
-int main() {
+void test() {
 
     vector<vector<double>> a(3);
     for(int i = 0; i < 3; i++) {
