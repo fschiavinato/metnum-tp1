@@ -6,16 +6,16 @@ using namespace std;
 
    
 
-void descomponerLU(vector<vector<double>> &A, int n, int m, vector<int> &p) {
-    vector<vector<double>> &L = A;
-    vector<vector<double>> &U = A;
+void descomponerLU(vector<vector<double> > &A, int n, int m, vector<int> &p) {
+    vector<vector<double> > &L = A;
+    vector<vector<double> > &U = A;
     for(int i = 0; i < n; i++) p[i] = i;
     for(int l = 0; l < n - 1; l++) {
         double maximo = U[l][l];
         for(int pivote = l; pivote < n; pivote++) {
             if(maximo < abs(U[pivote][l])) {
                 p[l] = pivote;
-                maximo = abs(U[pivote][l]);
+                maximo = std::abs(U[pivote][l]);
             }
         }
 
@@ -36,7 +36,7 @@ void descomponerLU(vector<vector<double>> &A, int n, int m, vector<int> &p) {
     }
 }
 
-void resolverLU(const vector<vector<double>> &A, int n, int m, const vector<int>& p, vector<double> &x, vector<double> &b) {
+void resolverLU(const vector<vector<double> > &A, int n, int m, const vector<int>& p, vector<double> &x, vector<double> &b) {
     
     for(int i = 0; i < n; i++) {
         if(p[i] < i) {
@@ -61,7 +61,7 @@ void resolverLU(const vector<vector<double>> &A, int n, int m, const vector<int>
 
 void test() {
 
-    vector<vector<double>> a(3);
+    vector<vector<double> > a(3);
     for(int i = 0; i < 3; i++) {
         a[i].resize(3);
     }

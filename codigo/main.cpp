@@ -8,17 +8,17 @@
 #include "lu.h"
 #include "macros.h"
  
-void calcularNormales(vector<vector<double>>& s, vector<uchar*>& imagenes, int height, int width, vector<vector<vector<double>>>& normales);
+void calcularNormales(vector<vector<double> >& s, vector<uchar*>& imagenes, int height, int width, vector<vector<vector<double> > >& normales);
 
 int main() {
     vector<int> lucesElegidas = {0,1,2}; sort(lucesElegidas.begin(), lucesElegidas.end());
-    vector<vector<double>> s(3);
+    vector<vector<double> > s(3);
     vector<uchar*> imagenes(3);
     string figura = "mate";
     ifstream lucesFile("luces.txt");
     int cantLuces, width, height;
     PPM_LOADER_PIXEL_TYPE pt = PPM_LOADER_PIXEL_TYPE_INVALID;
-    vector<vector<vector<double>>> normales;
+    vector<vector<vector<double> > > normales;
 
     for(int i = 0 ; i < 3; i++) {
         s[i].resize(3);
@@ -35,8 +35,8 @@ int main() {
         filename += figura;
         filename += "/";
         filename += figura;
-        filename += ".";
-        filename += to_string(i);
+        filename += "."+i;
+        //filename += to_string(i);
         filename += ".ppm";
         LoadPPMFile(&imagenes[i], &width, &height, &pt, filename.c_str());
     }
@@ -51,7 +51,7 @@ int main() {
     return 0;
 }
 
-void calcularNormales(vector<vector<double>>& s, vector<uchar*>& imagenes, int height, int width, vector<vector<vector<double>>>& normales) {
+void calcularNormales(vector<vector<double> >& s, vector<uchar*>& imagenes, int height, int width, vector<vector<vector<double> > >& normales) {
     vector<int> p(3);
     descomponerLU(s, 3, 3, p);
     for(int i = 0; i < height; i++) {
