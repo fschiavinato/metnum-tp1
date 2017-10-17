@@ -97,8 +97,8 @@ void calibrar() {
     info >> cantImagenes;
     for(int i = 0; i < cantImagenes; i++) {
 
-        filename = "ppmImagenes/mate/mate."+i;
-//        filename += to_string(i);
+        filename = "ppmImagenes/mate/mate.";
+        filename += to_string(i);
         filename += ".ppm";
         ret = LoadPPMFile(&data, &width, &height, &pt, filename.c_str());
         double sx, sy, sz;

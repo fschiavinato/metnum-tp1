@@ -9,6 +9,8 @@
 #include "macros.h"
  
 void calcularNormales(vector<vector<double> >& s, vector<uchar*>& imagenes, int height, int width, vector<vector<vector<double> > >& normales);
+void poblarMatrizM(vector<vector<double> >& M,vector<double>& b, int height, int width, vector<vector<vector<double> > >& normales);
+
 
 int main() {
     vector<int> lucesElegidas = {0,1,2}; sort(lucesElegidas.begin(), lucesElegidas.end());
@@ -31,15 +33,19 @@ int main() {
         if(i == lucesElegidas[leyendo]) leyendo++;
     }
     for(int i = 0; i < lucesElegidas.size(); i++) {
-        string filename = "ppmImagenes/";
+		string filename = "ppmImagenes/";
         filename += figura;
         filename += "/";
         filename += figura;
-        filename += "."+i;
-        //filename += to_string(i);
+        filename += ".";
+        filename += std::to_string(i);
         filename += ".ppm";
+		cout<<"Iniciando carga de imagen: "<<filename<<endl;
         LoadPPMFile(&imagenes[i], &width, &height, &pt, filename.c_str());
+		cout<<"Finalizando carga de imagen: "<<filename<<endl;
     }
+
+	cout<<"Iniciando cálculo de normales"<<endl;
     normales.resize(height);
     for(int i = 0; i < height; i++) {
         normales[i].resize(width);
@@ -48,7 +54,34 @@ int main() {
         }
     }
     calcularNormales(s, imagenes, height, width, normales);
-    return 0;
+	cout<<"Finalizando cálculo de normales"<<endl;
+
+	vector<vector<double> > M;
+	vector<double> v;
+	int cantPixeles = height*width;
+	M.resize(2*cantPixeles);
+	for(int i=0;i<2*cantPixeles; i++)M[i].resize(cantPixeles);
+    poblarMatrizM(M, v,height, width, normales);   
+    
+	return 0;
+}
+
+void poblarMatrizM(vector<vector<double> >& M,vector<double>& v, int height, int width, vector<vector<vector<double> > >& normales){
+	int filaM = 0;
+    for(int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) { 
+			// Ecuación 11:
+			M[filaM][i*width+j] = -normales[i][j][2];
+			M[filaM][(i+1)*width+j] = normales[i][j][2];
+			v[filaM] = -normales[i][j][0];
+			filaM++;
+			// Ecuación 12:
+			M[filaM][i*width+j] = -normales[i][j][2];
+			M[filaM][i*width+j+1] = normales[i][j][2];
+			v[filaM] = -normales[i][j][1];
+			filaM++;
+        }
+    }
 }
 
 void calcularNormales(vector<vector<double> >& s, vector<uchar*>& imagenes, int height, int width, vector<vector<vector<double> > >& normales) {
