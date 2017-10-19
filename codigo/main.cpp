@@ -2,6 +2,8 @@
 #include <fstream>
 #include <algorithm>
 #include <cmath>
+#include <utility>
+#include <map>
 #include"ppmloader/ppmloader.h"
 #include "OperacionesMatriciales.h"
 #include "test/OperacionesMatricialesTest.h"
@@ -9,7 +11,7 @@
 #include "macros.h"
  
 void calcularNormales(vector<vector<double> >& s, vector<uchar*>& imagenes, int height, int width, vector<vector<vector<double> > >& normales);
-void poblarMatrizM(vector<vector<double> >& M,vector<double>& b, int height, int width, vector<vector<vector<double> > >& normales);
+void poblarMatrizM(map<pair<int,int>,double>& M,vector<double>& b, int height, int width, vector<vector<vector<double> > >& normales);
 
 
 int main() {
@@ -56,32 +58,36 @@ int main() {
     calcularNormales(s, imagenes, height, width, normales);
 	cout<<"Finalizando cálculo de normales"<<endl;
 
-	vector<vector<double> > M;
-	vector<double> v;
 	int cantPixeles = height*width;
-	M.resize(2*cantPixeles);
-	for(int i=0;i<2*cantPixeles; i++)M[i].resize(cantPixeles);
-    poblarMatrizM(M, v,height, width, normales);   
-    
+	vector<double> v(2*cantPixeles);
+	cout<<"Armado Matriz M - Inicio - height: " << height<<endl;
+	cout<<"Armado Matriz M - Inicio - width: " << width<<endl;
+	cout<<"Armado Matriz M - Inicio - cantPixeles: " << cantPixeles<<endl;
+	map<pair<int,int>,double> M;	// El pair de la clave representa <Fila,Columna> de cada elemento
+	poblarMatrizM(M, v,height, width, normales);   
+	cout<<"Armado Matriz M - Inicio - M.size: " << M.size()<<endl;
+    //OperacionesMatriciales::imprimirMatrizEsparsa(M);
 	return 0;
 }
 
-void poblarMatrizM(vector<vector<double> >& M,vector<double>& v, int height, int width, vector<vector<vector<double> > >& normales){
+void poblarMatrizM(map<pair<int,int>,double>& M,vector<double>& v, int height, int width, vector<vector<vector<double> > >& normales){
+	int cantPixeles = height*width;
 	int filaM = 0;
-    for(int i = 0; i < height; i++) {
-        for(int j = 0; j < width; j++) { 
+	for(int i = 0; i < height; i++) {
+		//cout<<"Armado Matriz M - i: " << i <<endl;
+		for(int j = 0; j < width; j++){  
 			// Ecuación 11:
-			M[filaM][i*width+j] = -normales[i][j][2];
-			M[filaM][(i+1)*width+j] = normales[i][j][2];
+			M[std::make_pair(filaM,i*width+j)] = -normales[i][j][2];
+			if((i+1)*width+j<cantPixeles) M[std::make_pair(filaM,(i+1)*width+j)] = normales[i][j][2];
 			v[filaM] = -normales[i][j][0];
 			filaM++;
 			// Ecuación 12:
-			M[filaM][i*width+j] = -normales[i][j][2];
-			M[filaM][i*width+j+1] = normales[i][j][2];
+			M[std::make_pair(filaM,i*width+j)] = -normales[i][j][2];
+			if(i*width+j+1<cantPixeles) M[std::make_pair(filaM,i*width+j+1)] = normales[i][j][2];
 			v[filaM] = -normales[i][j][1];
 			filaM++;
-        }
-    }
+		}
+	}
 }
 
 void calcularNormales(vector<vector<double> >& s, vector<uchar*>& imagenes, int height, int width, vector<vector<vector<double> > >& normales) {

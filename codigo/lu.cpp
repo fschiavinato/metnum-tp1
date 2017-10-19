@@ -1,11 +1,11 @@
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 #include <vector>
 #include "macros.h"
 using namespace std;
 
    
-
 void descomponerLU(vector<vector<double> > &A, int n, int m, vector<int> &p) {
     vector<vector<double> > &L = A;
     vector<vector<double> > &U = A;
@@ -13,7 +13,7 @@ void descomponerLU(vector<vector<double> > &A, int n, int m, vector<int> &p) {
     for(int l = 0; l < n - 1; l++) {
         double maximo = U[l][l];
         for(int pivote = l; pivote < n; pivote++) {
-            if(maximo < abs(U[pivote][l])) {
+            if(maximo < std::abs((double)(U[pivote][l]))) {
                 p[l] = pivote;
                 maximo = std::abs(U[pivote][l]);
             }
