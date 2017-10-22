@@ -11,8 +11,7 @@
 #include "macros.h"
  
 void calcularNormales(vector<vector<double> >& s, vector<uchar*>& imagenes, int height, int width, vector<vector<vector<double> > >& normales);
-void poblarMatrizM(map<pair<int,int>,double>& M,vector<double>& b, int height, int width, vector<vector<vector<double> > >& normales);
-
+void poblarMatrizM(map<pair<int,int>,double>& M,map<int,double>& v, int height, int width, vector<vector<vector<double> > >& normales);
 
 int main() {
     vector<int> lucesElegidas = {0,1,2}; sort(lucesElegidas.begin(), lucesElegidas.end());
@@ -55,22 +54,33 @@ int main() {
             normales[i][j].resize(3);
         }
     }
-    calcularNormales(s, imagenes, height, width, normales);
+   calcularNormales(s, imagenes, height, width, normales);
 	cout<<"Finalizando cálculo de normales"<<endl;
 
 	int cantPixeles = height*width;
-	vector<double> v(2*cantPixeles);
+	map<int,double> v;				//size: 2*cantPixeles
+	map<int,double> MtXv;			//size: cantPixeles
+	map<pair<int,int>,double> M;	// El pair de la clave representa <Fila,Columna> de cada elemento
+	map<pair<int,int>,double> Mt;	// El pair de la clave representa <Fila,Columna> de cada elemento
+	map<pair<int,int>,double> A;	// El pair de la clave representa <Fila,Columna> de cada elemento
+
 	cout<<"Armado Matriz M - Inicio - height: " << height<<endl;
 	cout<<"Armado Matriz M - Inicio - width: " << width<<endl;
 	cout<<"Armado Matriz M - Inicio - cantPixeles: " << cantPixeles<<endl;
-	map<pair<int,int>,double> M;	// El pair de la clave representa <Fila,Columna> de cada elemento
+
 	poblarMatrizM(M, v,height, width, normales);   
+	OperacionesMatriciales::transponerMatrizEsparsa(Mt,M);
+	OperacionesMatriciales::posMultiplicarMatrizEsparsa(MtXv,Mt,v);
+	OperacionesMatriciales::multiplicarMatricesEsparsas(A,Mt,M);
 	cout<<"Armado Matriz M - Inicio - M.size: " << M.size()<<endl;
-    //OperacionesMatriciales::imprimirMatrizEsparsa(M);
+	cout<<"Armado Matriz M - Inicio - v.size: " << v.size()<<endl;
+	cout<<"Armado Matriz M - Inicio - Mt.size: " << Mt.size()<<endl;
+	cout<<"Armado Matriz M - Inicio - MtXv.size: " << MtXv.size()<<endl;
+	cout<<"Armado Matriz M - Inicio - A.size: " << A.size()<<endl;
 	return 0;
 }
 
-void poblarMatrizM(map<pair<int,int>,double>& M,vector<double>& v, int height, int width, vector<vector<vector<double> > >& normales){
+void poblarMatrizM(map<pair<int,int>,double>& M,map<int,double>& v, int height, int width, vector<vector<vector<double> > >& normales){
 	int cantPixeles = height*width;
 	int filaM = 0;
 	for(int i = 0; i < height; i++) {

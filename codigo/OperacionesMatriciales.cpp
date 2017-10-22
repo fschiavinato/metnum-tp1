@@ -4,6 +4,7 @@
 #include <iostream> 
 #include <set>
 #include <math.h> 
+#include <cmath>
 #include "OperacionesMatriciales.h"
 
 /*OperacionesMatriciales::OperacionesMatriciales(){
@@ -124,7 +125,88 @@ void OperacionesMatriciales::imprimirMatriz(vector<vector<double> >& M,int cantC
 	}
 }
 
-
 void OperacionesMatriciales::imprimirMatrizEsparsa(map<pair<int,int>,double>& M){
 	for (const auto &pair:M) cout << "("<<pair.first.first<<","<<pair.first.second << "): " << pair.second << endl;
 }
+void OperacionesMatriciales::imprimirMatrizEsparsa(map<int,double>& M){
+	for (const auto &pair:M) cout << "("<<pair.first<<"): " << pair.second << endl;
+}
+
+void OperacionesMatriciales::transponerMatrizEsparsa(map<pair<int,int>,double>& matrizResultado,map<pair<int,int>,double>& matrizOriginal){
+	for (const auto &p:matrizOriginal) matrizResultado[std::make_pair(p.first.second,p.first.first)] = p.second;
+}
+
+void OperacionesMatriciales::posMultiplicarMatrizEsparsa(map<int,double>& r,map<pair<int,int>,double>& m, map<int,double> v){
+	map<int,double>::iterator itV;
+	map<int,double>::iterator itR;
+	for(const auto &p:m){			// p es de tipo <<Fila i,Columna j>,Valor d>
+		double valorPrevio = 0;
+		itR=r.find(p.first.first);																	// r[i]
+		if(itR!=r.end()) valorPrevio = itR->second;
+		itV=v.find(p.first.second);		 														// v[j]
+		if(itV!=v.end()) r[p.first.first]=valorPrevio + p.second*(itV->second);		// r[i] = r[i]+m[i,j]*v[j]
+	}
+}
+
+/**multiplicarMatricesEsparsas:
+Postcondición: mR = m1*m2. mR es de dimensiones n X m.
+Precondición: m1 es de dimensiones n X k y m2 es de dimensiones k X m. */
+void OperacionesMatriciales::multiplicarMatricesEsparsas(map<pair<int,int>,double>& mR,map<pair<int,int>,double>& m1,map<pair<int,int>,double>& m2){
+
+	/** Si aux[k]=({1,2,5},{3,4}), esto quiere decir que son distintos de cero:
+		m1[1,k], m1[2,k], m1[5,k], m2[k,3];	m2[k,4].
+		De estos valores, se puede calcular: 
+		mR[1,3] = m1[1,k]*m2[k,3];
+		mR[1,4] = m1[1,k]*m2[k,4];
+		mR[2,3] = m1[2,k]*m2[k,3];
+		mR[2,4] = m1[2,k]*m2[k,4];
+		mR[5,3] = m1[5,k]*m2[k,3];
+		mR[5,4] = m1[5,k]*m2[k,4];  */
+	map<int,pair<set<pair<int,double>>,set<pair<int,double>>>> aux;	// El primer set contiene las filas de m1 y el segundo, las columnas de m2.
+	for(const auto &p:m1){			// p es de tipo <<Fila i,Columna j>,Valor d>
+		int fila = p.first.first;
+		int columna = p.first.second;
+		int valor = p.second;
+		aux[columna].first.insert(std::make_pair(fila,valor));
+	}
+	for(const auto &p:m2){			// p es de tipo <<Fila i,Columna j>,Valor d>
+		int fila = p.first.first;
+		int columna = p.first.second;
+		int valor = p.second;
+		aux[fila].second.insert(std::make_pair(columna,valor));
+	}
+
+	cout<<"AUX"<<endl;
+	for(const auto &p:aux){		// p es de tipo <int k, pair< set<pair<int,double> , set<pair<int,double> > >
+		for(const auto &p1:p.second.first){		// p1 es de tipo pair<int filaM1,double M1[filaM1,k]>
+			for(const auto &p2:p.second.second){		// p2 es de tipo pair<int columnaM2,double M2[k,columnaM2]>
+				pair<int,int> posicionMR = std::make_pair(p1.first,p2.first);
+				mR[posicionMR] = mR[posicionMR] + p1.second*p2.second;
+			}
+		}
+	}
+}
+
+void OperacionesMatriciales::convertirAEsparsa(map<pair<int,int>,double>& mRecipiente,vector<vector<double> >& mFuente){
+	mRecipiente.clear();				// Limpio mRecipiente:
+	// Le agrego sus nuevos valores:
+	for(int i=0;i<mFuente.size();i++){
+		for(int j=0;j<mFuente[i].size();j++){
+			if(std::abs(mFuente[i][j])>10E-6) mRecipiente[std::make_pair(i,j)]=mFuente[i][j];
+		}
+	}
+}
+
+void OperacionesMatriciales::convertirDeEsparsa(map<pair<int,int>,double>& mFuente,vector<vector<double> >& mRecipiente){
+	// Limpio mRecipiente:
+	for(int i=0;i<mRecipiente.size();i++) mRecipiente[i].clear();
+	mRecipiente.clear();
+	// Le agrego sus nuevos valores:
+	for(const auto &p:mFuente){			// p es de tipo <<Fila i,Columna j>,Valor d>
+		if(mRecipiente.size()<=p.first.first) mRecipiente.resize(p.first.first+1);
+		if(mRecipiente[p.first.first].size()<=p.first.second) mRecipiente[p.first.first].resize(p.first.second+1);
+		mRecipiente[p.first.first][p.first.second]=p.second;
+	}
+}
+
+

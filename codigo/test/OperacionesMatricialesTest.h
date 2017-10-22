@@ -11,5 +11,6 @@ class OperacionesMatricialesTest {
 		static void imprimirMatriz(vector<vector<double> > m,int filas, int columnas);
 		static void test01();
 		static void test02();
+		static void test03();
 };
 #endif
