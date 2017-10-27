@@ -1,12 +1,13 @@
 #include <iostream> 
 #include <vector> 
+#include <utility> 
 #include <math.h> 
 #include <cmath>
 #include "./../OperacionesMatriciales.h"
 #include "./OperacionesMatricialesTest.h"
 
 int main() {
-	OperacionesMatricialesTest::test03();
+	OperacionesMatricialesTest::test05();
 }
 
 void OperacionesMatricialesTest::test01(){
@@ -101,9 +102,113 @@ void OperacionesMatricialesTest::test03(){
 	cout<<"AB esparsa:"<<endl;	OperacionesMatriciales::imprimirMatrizEsparsa(ABe);
 
 	OperacionesMatriciales::convertirDeEsparsa(ABe,AB);
+	cout<<"A:"<<endl;	OperacionesMatricialesTest::imprimirMatriz(A,3,3);
+	cout<<"B:"<<endl;	OperacionesMatricialesTest::imprimirMatriz(B,3,3);
 	cout<<"AB:"<<endl;	OperacionesMatricialesTest::imprimirMatriz(AB,3,3);
 
+	vector<pair<int,int>> mMFilaNoNuloPorColumnaEnA;
+	vector<pair<int,int>> mMColumnaNoNuloPorFilaEnA;
+	vector<pair<int,int>> mMFilaNoNuloPorColumnaEnB;
+	vector<pair<int,int>> mMColumnaNoNuloPorFilaEnB;
+	vector<pair<int,int>> mMFilaNoNuloPorColumnaEnAB;
+	vector<pair<int,int>> mMColumnaNoNuloPorFilaEnAB;
+
+	OperacionesMatriciales::delimitarAreaDeValores(Ae,mMFilaNoNuloPorColumnaEnA,mMColumnaNoNuloPorFilaEnA);
+	OperacionesMatriciales::delimitarAreaDeValores(Be,mMFilaNoNuloPorColumnaEnB,mMColumnaNoNuloPorFilaEnB);
+	OperacionesMatriciales::delimitarAreaDeValores(ABe,mMFilaNoNuloPorColumnaEnAB,mMColumnaNoNuloPorFilaEnAB);
+
+	cout<<"mMFilaNoNuloPorColumnaEnA:   "; OperacionesMatricialesTest::imprimirVector(mMFilaNoNuloPorColumnaEnA);
+	cout<<"mMColumnaNoNuloPorFilaEnA:   "; OperacionesMatricialesTest::imprimirVector(mMColumnaNoNuloPorFilaEnA);
+	cout<<"mMFilaNoNuloPorColumnaEnB:   "; OperacionesMatricialesTest::imprimirVector(mMFilaNoNuloPorColumnaEnB);
+	cout<<"mMColumnaNoNuloPorFilaEnB:   "; OperacionesMatricialesTest::imprimirVector(mMColumnaNoNuloPorFilaEnB);
+	cout<<"mMFilaNoNuloPorColumnaEnAB:  "; OperacionesMatricialesTest::imprimirVector(mMFilaNoNuloPorColumnaEnAB);
+	cout<<"mMColumnaNoNuloPorFilaEnAB:  "; OperacionesMatricialesTest::imprimirVector(mMColumnaNoNuloPorFilaEnAB);
 }	
+
+void OperacionesMatricialesTest::test04(){
+	vector<vector<double> > A = vector<vector<double> >(4);
+	for(int i=0;i<4;i++) A[i] = vector<double>(4);
+	vector<vector<double> > B = vector<vector<double> >(4);
+	for(int i=0;i<4;i++) B[i] = vector<double>(4);
+	A[0][0]=5 ;	A[0][1]=7 ;	A[0][2]=4 ; A[0][3]=3;		// Fila 0 de la matriz A
+	A[1][0]=2 ;	A[1][1]=-1; A[1][2]=3 ; A[1][3]=2;		// Fila 1 de la matriz A
+	A[2][0]=8 ;	A[2][1]=5 ;	A[2][2]=3 ; A[2][3]=1;		// Fila 2 de la matriz A
+	A[3][0]=2 ;	A[3][1]=4 ;	A[3][2]=2 ; A[3][3]=1;		// Fila 3 de la matriz A
+	B[0][0]=8 ;	B[0][1]=4 ;	B[0][2]=3 ; B[0][3]=2;		// Fila 0 de la matriz B
+	B[1][0]=-1;	B[1][1]=4 ; B[1][2]=-3; B[1][3]=-2;		// Fila 1 de la matriz B
+	B[2][0]=0 ;	B[2][1]=5 ;	B[2][2]=7 ; B[2][3]=9;		// Fila 2 de la matriz B
+	B[3][0]=8 ;	B[3][1]=4 ;	B[3][2]=2 ; B[3][3]=1;		// Fila 3 de la matriz B
+	vector<vector<double> > AB = vector<vector<double> >(4);
+	for(int i=0;i<4;i++) AB[i] = vector<double>(4);
+
+	map<pair<int,int>,double> Ae;	// El pair de la clave representa <Fila,Columna> de cada elemento
+	map<pair<int,int>,double> Be;	// El pair de la clave representa <Fila,Columna> de cada elemento
+	map<pair<int,int>,double> ABe;	// El pair de la clave representa <Fila,Columna> de cada elemento
+	OperacionesMatriciales::convertirAEsparsa(Ae,A);
+	OperacionesMatriciales::convertirAEsparsa(Be,B);
+	OperacionesMatriciales::multiplicarMatricesEsparsas(ABe,Ae,Be);	
+	/* AB tiene que resultar: 57,80,28,35; 33,27,34,35; 67,71,32,34; 20,38,10,15.		*/
+
+	OperacionesMatriciales::convertirDeEsparsa(ABe,AB);
+	cout<<"A:"<<endl;	OperacionesMatricialesTest::imprimirMatriz(A,4,4);
+	cout<<"B:"<<endl;	OperacionesMatricialesTest::imprimirMatriz(B,4,4);
+	cout<<"AB:"<<endl;	OperacionesMatricialesTest::imprimirMatriz(AB,4,4);
+
+	vector<pair<int,int>> mMFilaNoNuloPorColumnaEnA;
+	vector<pair<int,int>> mMColumnaNoNuloPorFilaEnA;
+	vector<pair<int,int>> mMFilaNoNuloPorColumnaEnB;
+	vector<pair<int,int>> mMColumnaNoNuloPorFilaEnB;
+	vector<pair<int,int>> mMFilaNoNuloPorColumnaEnAB;
+	vector<pair<int,int>> mMColumnaNoNuloPorFilaEnAB;
+
+	OperacionesMatriciales::delimitarAreaDeValores(Ae,mMFilaNoNuloPorColumnaEnA,mMColumnaNoNuloPorFilaEnA);
+	OperacionesMatriciales::delimitarAreaDeValores(Be,mMFilaNoNuloPorColumnaEnB,mMColumnaNoNuloPorFilaEnB);
+	OperacionesMatriciales::delimitarAreaDeValores(ABe,mMFilaNoNuloPorColumnaEnAB,mMColumnaNoNuloPorFilaEnAB);
+
+	cout<<"mMFilaNoNuloPorColumnaEnA:   "; OperacionesMatricialesTest::imprimirVector(mMFilaNoNuloPorColumnaEnA);
+	cout<<"mMColumnaNoNuloPorFilaEnA:   "; OperacionesMatricialesTest::imprimirVector(mMColumnaNoNuloPorFilaEnA);
+	cout<<"mMFilaNoNuloPorColumnaEnB:   "; OperacionesMatricialesTest::imprimirVector(mMFilaNoNuloPorColumnaEnB);
+	cout<<"mMColumnaNoNuloPorFilaEnB:   "; OperacionesMatricialesTest::imprimirVector(mMColumnaNoNuloPorFilaEnB);
+	cout<<"mMFilaNoNuloPorColumnaEnAB:  "; OperacionesMatricialesTest::imprimirVector(mMFilaNoNuloPorColumnaEnAB);
+	cout<<"mMColumnaNoNuloPorFilaEnAB:  "; OperacionesMatricialesTest::imprimirVector(mMColumnaNoNuloPorFilaEnAB);
+}	
+
+void OperacionesMatricialesTest::test05(){
+	vector<vector<double> > A = vector<vector<double> >(3);
+	for(int i=0;i<3;i++) A[i] = vector<double>(3);
+	A[0][0]=4 ;	A[0][1]=-6;	A[0][2]=0 ;			// Fila 0 de la matriz A
+	A[1][0]=2 ;	A[1][1]=1 ;	A[1][2]=1 ;			// Fila 1 de la matriz A
+	A[2][0]=-2;	A[2][1]=7 ;	A[2][2]=2 ;			// Fila 2 de la matriz A
+	vector<double> b = vector<double>(3);
+	b[0]=-2; b[1]=5; b[2]=9;		// Ax=b se resuleve únicamente con x = <1,1,2>;
+
+	map<pair<int,int>,double> Ae;	
+	map<int,double> Be;	
+	vector<pair<int,int>> mMFilaNoNuloPorColumnaEnA;
+	vector<pair<int,int>> mMColumnaNoNuloPorFilaEnA;
+
+	OperacionesMatriciales::convertirAEsparsa(Ae,A);
+	OperacionesMatriciales::convertirAEsparsa(Be,b);
+	OperacionesMatriciales::delimitarAreaDeValores(Ae,mMFilaNoNuloPorColumnaEnA,mMColumnaNoNuloPorFilaEnA);
+
+	map<int,double> x;
+	OperacionesMatriciales::egEsparsa(Ae,mMFilaNoNuloPorColumnaEnA,mMColumnaNoNuloPorFilaEnA,Be,x);
+
+	cout<<"A:"<<endl;	OperacionesMatricialesTest::imprimirMatriz(A,3,3);
+	cout<<"Ae:"<<endl;OperacionesMatriciales::imprimirMatrizEsparsa(Ae);
+	cout<<"Be:"<<endl;OperacionesMatriciales::imprimirMatrizEsparsa(Be);
+	cout<<"x:"<<endl;	OperacionesMatriciales::imprimirMatrizEsparsa(x);
+}
+
+void OperacionesMatricialesTest::imprimirVector(vector<pair<int,int>>& v){
+	cout<<"v: {";
+	for(int i=0;i<v.size();i++) {
+		if(i>0)cout<<";";
+		cout<<"("<<v[i].first<<","<<v[i].second<<")";
+	}
+	cout<<"}\n";
+}
+
 
 void OperacionesMatricialesTest::imprimirVector(double* v,int n){
 	cout<<"v: {";
@@ -115,7 +220,6 @@ void OperacionesMatricialesTest::imprimirVector(double* v,int n){
 }
 
 void OperacionesMatricialesTest::imprimirMatriz(vector<vector<double> > m,int filas, int columnas){
-	cout<<"m: \n";
 	for(int i=0;i<filas;i++) {
 		for(int j=0;j<columnas;j++) {
 			if(j>0)cout<<" - ";

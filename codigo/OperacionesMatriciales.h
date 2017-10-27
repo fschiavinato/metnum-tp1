@@ -24,6 +24,9 @@ class OperacionesMatriciales {
 		static void imprimirMatriz(vector<vector<double> >& M,int cantColumnas, int cantFilas, string textoPresentacion);
 		
 		////// OPERACIONES CON MATRICES ESPARSAS, IMPLEMENTADAS SOBRE DICCIONARIOS DE POSICIONES A VALORES:	//////
+		static void imprimirMatrizEsparsa(map<pair<int,int>,double>& M
+                                    , vector<pair<int,int>>& minMaxFilaNoNuloPorColumna
+                                    , vector<pair<int,int>>& minMaxColumnaNoNuloPorFila);
 		static void imprimirMatrizEsparsa(map<int,double>& M);
 		static void imprimirMatrizEsparsa(map<pair<int,int>,double>& M);
 		static void transponerMatrizEsparsa(map<pair<int,int>,double>& matrizResultado,map<pair<int,int>,double>& matrizOriginal);
@@ -39,7 +42,25 @@ class OperacionesMatriciales {
 		static void multiplicarMatricesEsparsas(map<pair<int,int>,double>& mR,map<pair<int,int>,double>& m1,map<pair<int,int>,double>& m2);
 
 		////// CONVERSIONES ENTRE MATRICES IMPLEMENTADAS SOBRE VECTORES Y MATRICES ESPARSAS:	//////		
+		static void convertirAEsparsa(map<int,double>& mRecipiente,vector<double>& mFuente);
 		static void convertirAEsparsa(map<pair<int,int>,double>& mRecipiente,vector<vector<double> >& mFuente);
+		static void convertirAEsparsa(map<pair<int,int>,double>& mRecipiente
+                                    , vector<pair<int,int>>& minMaxFilaNoNuloPorColumna
+                                    , vector<pair<int,int>>& minMaxColumnaNoNuloPorFila
+                                    , vector<vector<double> >& mFuente);
+		static void delimitarAreaDeValores(map<pair<int,int>,double>& M
+                                   , vector<pair<int,int>>& minMaxFilaNoNuloPorColumna
+                                   , vector<pair<int,int>>& minMaxColumnaNoNuloPorFila);
 		static void convertirDeEsparsa(map<pair<int,int>,double>& mFuente,vector<vector<double> >& mRecipiente);
+
+		static void resolverTriangularSuperiorEsparsa(map<pair<int,int>,double>& A
+								, vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
+								, vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
+								, map<int,double>& b, map<int,double>& x);
+		static void egEsparsa(map<pair<int,int>,double>& A
+								, vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
+								, vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
+								, map<int,double>& b, map<int,double>& x);
+
 };
 #endif

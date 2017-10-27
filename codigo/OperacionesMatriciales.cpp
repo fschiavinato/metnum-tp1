@@ -1,11 +1,14 @@
 #include <utility>
 #include <map>
 #include <vector>
-#include <iostream> 
+#include <iostream>
 #include <set>
-#include <math.h> 
+#include <math.h>
 #include <cmath>
 #include "OperacionesMatriciales.h"
+
+#define EPSILON 10E-6
+#define ES_CASI_CERO(x) std::abs(x)<=EPSILON
 
 /*OperacionesMatriciales::OperacionesMatriciales(){
 }
@@ -15,137 +18,146 @@ OperacionesMatriciales::~OperacionesMatriciales(){
 
 
 /** matrix es la matriz de (n+1) columnas, cuyas primeras n columnas conforman la matriz A y la
-última colmna, n-1, es el vector b, en el sistema Ax=b. 
+última colmna, n-1, es el vector b, en el sistema Ax=b.
 Precondición: dim=n-1.
 El método resuelve el sistema usando el método de Eliminación Gaussiana*/
-double* OperacionesMatriciales::eg(vector<vector<double> > matrix, int dim){		
-	//EG
-	for(int z = 0; z < dim-1; z++){
-		for(int i = (z+1); i < dim; i++) {
-			double pivote = (matrix[i][z]/matrix[z][z]);
-			for(int j = z; j < dim+1;j++){
-					matrix[i][j] = (matrix[i][j]) - (pivote*matrix[z][j]);
-			}
-		}
-	}
-	return resolverTriangularSuperior(matrix, dim);		
+double* OperacionesMatriciales::eg(vector<vector<double> > matrix, int dim){       
+    //EG
+    for(int z = 0; z < dim-1; z++){
+        for(int i = (z+1); i < dim; i++) {
+            double pivote = (matrix[i][z]/matrix[z][z]);
+            for(int j = z; j < dim+1;j++){
+                    matrix[i][j] = (matrix[i][j]) - (pivote*matrix[z][j]);
+            }
+        }
+    }
+    return resolverTriangularSuperior(matrix, dim);       
 }
 
 /** matrix es la matriz de (n+1) columnas, cuyas primeras n columnas conforman la matriz A y la
-última colmna, n-1, es el vector b, en el sistema Ax=b. 
+última colmna, n-1, es el vector b, en el sistema Ax=b.
 Precondición: dim=n-1.
 El método resuelve el sistema usando el método de Cholesky*/
 double* OperacionesMatriciales::cholesky(vector<vector<double> > matrix, int dim){
-		for(int i = 0; i < dim ; i++){
-			double diag = matrix[i][i];
-			for(int z = 0; z < i ; z++){
-				//diag = diag - pow(U[z][i],2);
-				diag = diag - pow(matrix[z][i],2);
-			}
-			//U[i][i] = sqrt(diag);
-			matrix[i][i] = sqrt(diag);
-			for(int j = i+1; j< dim; j++){
-				double value = matrix[i][j];
-				for(int z = 0; z < i  ; z++){
-					//value = value - U[z][i]*U[z][j];
-					value = value - matrix[z][i]*matrix[z][j];
-				}
-				//U[i][j] = (value/U[i][i]);
-				matrix[i][j] = (value/matrix[i][i]);
-				matrix[j][i] = matrix[i][j];
-			}
-		}				
-		double* resultado = resolverTriangularInferior(matrix, dim);
-		resultado = resolverTriangularSuperior(matrix, dim, resultado);		
-		return resultado;		
+        for(int i = 0; i < dim ; i++){
+            double diag = matrix[i][i];
+            for(int z = 0; z < i ; z++){
+                //diag = diag - pow(U[z][i],2);
+                diag = diag - pow(matrix[z][i],2);
+            }
+            //U[i][i] = sqrt(diag);
+            matrix[i][i] = sqrt(diag);
+            for(int j = i+1; j< dim; j++){
+                double value = matrix[i][j];
+                for(int z = 0; z < i  ; z++){
+                    //value = value - U[z][i]*U[z][j];
+                    value = value - matrix[z][i]*matrix[z][j];
+                }
+                //U[i][j] = (value/U[i][i]);
+                matrix[i][j] = (value/matrix[i][i]);
+                matrix[j][i] = matrix[i][j];
+            }
+        }               
+        double* resultado = resolverTriangularInferior(matrix, dim);
+        resultado = resolverTriangularSuperior(matrix, dim, resultado);       
+        return resultado;       
 }
 
 /** matrix es la matriz de (n+1) columnas, cuyas primeras n columnas conforman la matriz A y la
-última colmna, n-1, es el vector b, en el sistema Ax=b. 
+última colmna, n-1, es el vector b, en el sistema Ax=b.
 Precondición: dim=n-1 && A es triangular superior.*/
 double* OperacionesMatriciales::resolverTriangularSuperior(vector<vector<double> > matrix, int dim){
-	cout<<"OperacionesMatriciales::resolverTriangularSuperior INI - dim: "<<dim<<"\n";		
-	double* resultado = (double*) malloc(sizeof(double)*dim);
-	for(int i = 0; i < dim; i++)resultado[i] = matrix[i][dim];
-	cout<<"OperacionesMatriciales::resolverTriangularSuperior FIN \n";		
-	return resolverTriangularSuperior(matrix, dim, resultado);	
+    cout<<"OperacionesMatriciales::resolverTriangularSuperior INI - dim: "<<dim<<"\n";       
+    double* resultado = (double*) malloc(sizeof(double)*dim);
+    for(int i = 0; i < dim; i++)resultado[i] = matrix[i][dim];
+    cout<<"OperacionesMatriciales::resolverTriangularSuperior FIN \n";       
+    return resolverTriangularSuperior(matrix, dim, resultado);   
 }
 
 double* OperacionesMatriciales::resolverTriangularSuperior(vector<vector<double> > matrix, int dim, double* resultado){
-	//Se resuelve el sistema de ecuaciones
-	for(int i = dim-1; i >= 0; i--){
-		for(int j = dim-1; j >= i; j--){
-			if(i!=j) resultado[i] = resultado[i] - (matrix[i][j]*resultado[j]);
-			else resultado[i] = resultado[i] / matrix[i][j];
-		}
-	}
-	return resultado;
+    //Se resuelve el sistema de ecuaciones
+    for(int i = dim-1; i >= 0; i--){
+        for(int j = dim-1; j >= i; j--){
+            if(i!=j) resultado[i] = resultado[i] - (matrix[i][j]*resultado[j]);
+            else resultado[i] = resultado[i] / matrix[i][j];
+        }
+    }
+    return resultado;
 }
 
 /** matrix es la matriz de (n+1) columnas, cuyas primeras n columnas conforman la matriz A y la
-última colmna, n-1, es el vector b, en el sistema Ax=b. 
+última colmna, n-1, es el vector b, en el sistema Ax=b.
 Precondición: dim=n-1 && A es triangular inferior.*/
 double* OperacionesMatriciales::resolverTriangularInferior(vector<vector<double> > matrix, int dim){
-		cout<<"OperacionesMatriciales::resolverTriangularInferior INI - dim: "<<dim<<"\n";		
-		double* resultado = (double*) malloc(sizeof(double)*dim);
-		
-		//init
-		for(int i = 0; i < dim; i++){
-			resultado[i] = matrix[i][dim];
-		}
-		
-		//Se resuelve el sistema de ecuaciones
-		for(int i = 0; i < dim ; i++){
-			for(int j = 0; j <= i; j++){
-				if(i!=j){
-					resultado[i] = resultado[i] - (matrix[i][j]*resultado[j]);
-				}else{
-					resultado[i] = resultado[i] / matrix[i][j];
-				}				 	
-			}
-		}
-		
-		//print
-		/*cout << endl;
-		for(int i = 0; i < dim; i++){
-			cout << resultado[i] << endl;
-		}
-		cout << endl;*/
-		cout<<"OperacionesMatriciales::resolverTriangularInferior FIN "<<"\n";		
-		return resultado;		
+        cout<<"OperacionesMatriciales::resolverTriangularInferior INI - dim: "<<dim<<"\n";       
+        double* resultado = (double*) malloc(sizeof(double)*dim);
+       
+        //init
+        for(int i = 0; i < dim; i++){
+            resultado[i] = matrix[i][dim];
+        }
+       
+        //Se resuelve el sistema de ecuaciones
+        for(int i = 0; i < dim ; i++){
+            for(int j = 0; j <= i; j++){
+                if(i!=j){
+                    resultado[i] = resultado[i] - (matrix[i][j]*resultado[j]);
+                }else{
+                    resultado[i] = resultado[i] / matrix[i][j];
+                }                    
+            }
+        }
+       
+        //print
+        /*cout << endl;
+        for(int i = 0; i < dim; i++){
+            cout << resultado[i] << endl;
+        }
+        cout << endl;*/
+        cout<<"OperacionesMatriciales::resolverTriangularInferior FIN "<<"\n";       
+        return resultado;       
 }
 
 void OperacionesMatriciales::imprimirMatriz(vector<vector<double> >& M,int cantColumnas, int cantFilas, string textoPresentacion){
-	cout<<textoPresentacion<<endl;
-	for(int i=0;i<cantFilas;i++){
-		for(int j=0;j<cantColumnas;j++){
-			cout<<M[i][j]<<" - ";
-		}
-		cout<<endl;
-	}
+    cout<<textoPresentacion<<endl;
+    for(int i=0;i<cantFilas;i++){
+        for(int j=0;j<cantColumnas;j++){
+            cout<<M[i][j]<<" - ";
+        }
+        cout<<endl;
+    }
+}
+
+void OperacionesMatriciales::imprimirMatrizEsparsa(map<pair<int,int>,double>& M
+                                    , vector<pair<int,int>>& minMaxFilaNoNuloPorColumna
+                                    , vector<pair<int,int>>& minMaxColumnaNoNuloPorFila
+){
+    for (const auto &pair:M) cout << "("<<pair.first.first<<","<<pair.first.second << "): " << pair.second << endl;
+	 for (int i=0; i<minMaxColumnaNoNuloPorFila.size();i++) cout<<"Min / Max Columna No Nula para Fila "<<i<<": "<<minMaxColumnaNoNuloPorFila[i].first<<" / "<<minMaxColumnaNoNuloPorFila[i].second<<endl;
+	 for (int j=0; j<minMaxFilaNoNuloPorColumna.size();j++) cout<<"Min / Max Fila No Nula para Columna "<<j<<": "<<minMaxFilaNoNuloPorColumna[j].first<<" / "<<minMaxFilaNoNuloPorColumna[j].second<<endl;
 }
 
 void OperacionesMatriciales::imprimirMatrizEsparsa(map<pair<int,int>,double>& M){
-	for (const auto &pair:M) cout << "("<<pair.first.first<<","<<pair.first.second << "): " << pair.second << endl;
+    for (const auto &pair:M) cout << "("<<pair.first.first<<","<<pair.first.second << "): " << pair.second << endl;
 }
 void OperacionesMatriciales::imprimirMatrizEsparsa(map<int,double>& M){
-	for (const auto &pair:M) cout << "("<<pair.first<<"): " << pair.second << endl;
+    for (const auto &pair:M) cout << "("<<pair.first<<"): " << pair.second << endl;
 }
 
 void OperacionesMatriciales::transponerMatrizEsparsa(map<pair<int,int>,double>& matrizResultado,map<pair<int,int>,double>& matrizOriginal){
-	for (const auto &p:matrizOriginal) matrizResultado[std::make_pair(p.first.second,p.first.first)] = p.second;
+    for (const auto &p:matrizOriginal) matrizResultado[std::make_pair(p.first.second,p.first.first)] = p.second;
 }
 
 void OperacionesMatriciales::posMultiplicarMatrizEsparsa(map<int,double>& r,map<pair<int,int>,double>& m, map<int,double> v){
-	map<int,double>::iterator itV;
-	map<int,double>::iterator itR;
-	for(const auto &p:m){			// p es de tipo <<Fila i,Columna j>,Valor d>
-		double valorPrevio = 0;
-		itR=r.find(p.first.first);																	// r[i]
-		if(itR!=r.end()) valorPrevio = itR->second;
-		itV=v.find(p.first.second);		 														// v[j]
-		if(itV!=v.end()) r[p.first.first]=valorPrevio + p.second*(itV->second);		// r[i] = r[i]+m[i,j]*v[j]
-	}
+    map<int,double>::iterator itV;
+    map<int,double>::iterator itR;
+    for(const auto &p:m){            // p es de tipo <<Fila i,Columna j>,Valor d>
+        double valorPrevio = 0;
+        itR=r.find(p.first.first);                                                                    // r[i]
+        if(itR!=r.end()) valorPrevio = itR->second;
+        itV=v.find(p.first.second);                                                                 // v[j]
+        if(itV!=v.end()) r[p.first.first]=valorPrevio + p.second*(itV->second);        // r[i] = r[i]+m[i,j]*v[j]
+    }
 }
 
 /**multiplicarMatricesEsparsas:
@@ -153,60 +165,185 @@ Postcondición: mR = m1*m2. mR es de dimensiones n X m.
 Precondición: m1 es de dimensiones n X k y m2 es de dimensiones k X m. */
 void OperacionesMatriciales::multiplicarMatricesEsparsas(map<pair<int,int>,double>& mR,map<pair<int,int>,double>& m1,map<pair<int,int>,double>& m2){
 
-	/** Si aux[k]=({1,2,5},{3,4}), esto quiere decir que son distintos de cero:
-		m1[1,k], m1[2,k], m1[5,k], m2[k,3];	m2[k,4].
-		De estos valores, se puede calcular: 
-		mR[1,3] = m1[1,k]*m2[k,3];
-		mR[1,4] = m1[1,k]*m2[k,4];
-		mR[2,3] = m1[2,k]*m2[k,3];
-		mR[2,4] = m1[2,k]*m2[k,4];
-		mR[5,3] = m1[5,k]*m2[k,3];
-		mR[5,4] = m1[5,k]*m2[k,4];  */
-	map<int,pair<set<pair<int,double>>,set<pair<int,double>>>> aux;	// El primer set contiene las filas de m1 y el segundo, las columnas de m2.
-	for(const auto &p:m1){			// p es de tipo <<Fila i,Columna j>,Valor d>
-		int fila = p.first.first;
-		int columna = p.first.second;
-		int valor = p.second;
-		aux[columna].first.insert(std::make_pair(fila,valor));
-	}
-	for(const auto &p:m2){			// p es de tipo <<Fila i,Columna j>,Valor d>
-		int fila = p.first.first;
-		int columna = p.first.second;
-		int valor = p.second;
-		aux[fila].second.insert(std::make_pair(columna,valor));
-	}
+    /** Si aux[k]=({1,2,5},{3,4}), esto quiere decir que son distintos de cero:
+        m1[1,k], m1[2,k], m1[5,k], m2[k,3];    m2[k,4].
+        De estos valores, se puede calcular:
+        mR[1,3] = m1[1,k]*m2[k,3];
+        mR[1,4] = m1[1,k]*m2[k,4];
+        mR[2,3] = m1[2,k]*m2[k,3];
+        mR[2,4] = m1[2,k]*m2[k,4];
+        mR[5,3] = m1[5,k]*m2[k,3];
+        mR[5,4] = m1[5,k]*m2[k,4];  */
+    map<int,pair<set<pair<int,double>>,set<pair<int,double>>>> aux;    // El primer set contiene las filas de m1 y el segundo, las columnas de m2.
+    for(const auto &p:m1){            // p es de tipo <<Fila i,Columna j>,Valor d>
+        int fila = p.first.first;
+        int columna = p.first.second;
+        int valor = p.second;
+        aux[columna].first.insert(std::make_pair(fila,valor));
+    }
+    for(const auto &p:m2){            // p es de tipo <<Fila i,Columna j>,Valor d>
+        int fila = p.first.first;
+        int columna = p.first.second;
+        int valor = p.second;
+        aux[fila].second.insert(std::make_pair(columna,valor));
+    }
 
-	cout<<"AUX"<<endl;
-	for(const auto &p:aux){		// p es de tipo <int k, pair< set<pair<int,double> , set<pair<int,double> > >
-		for(const auto &p1:p.second.first){		// p1 es de tipo pair<int filaM1,double M1[filaM1,k]>
-			for(const auto &p2:p.second.second){		// p2 es de tipo pair<int columnaM2,double M2[k,columnaM2]>
-				pair<int,int> posicionMR = std::make_pair(p1.first,p2.first);
-				mR[posicionMR] = mR[posicionMR] + p1.second*p2.second;
-			}
+    cout<<"AUX"<<endl;
+    for(const auto &p:aux){        // p es de tipo <int k, pair< set<pair<int,double> , set<pair<int,double> > >
+        for(const auto &p1:p.second.first){        // p1 es de tipo pair<int filaM1,double M1[filaM1,k]>
+            for(const auto &p2:p.second.second){        // p2 es de tipo pair<int columnaM2,double M2[k,columnaM2]>
+                pair<int,int> posicionMR = std::make_pair(p1.first,p2.first);
+                mR[posicionMR] = mR[posicionMR] + p1.second*p2.second;
+            }
+        }
+    }
+}
+
+void OperacionesMatriciales::delimitarAreaDeValores(map<pair<int,int>,double>& M
+                                    , vector<pair<int,int>>& minMaxFilaNoNuloPorColumna
+                                    , vector<pair<int,int>>& minMaxColumnaNoNuloPorFila){
+	minMaxFilaNoNuloPorColumna.clear();
+	minMaxColumnaNoNuloPorFila.clear();
+	for(const auto &p:M){            		// p es de tipo <<Fila i,Columna j>,Valor d>
+		int i = p.first.first;					// Fila i
+		int j = p.first.second;					// Columna j
+		if(minMaxColumnaNoNuloPorFila.size()<=i) minMaxColumnaNoNuloPorFila.resize(i+1,make_pair(-1,-1));
+		if(minMaxFilaNoNuloPorColumna.size()<=j) minMaxFilaNoNuloPorColumna.resize(j+1,make_pair(-1,-1));
+		if(!ES_CASI_CERO(p.second)){
+			int min_i = minMaxFilaNoNuloPorColumna[j].first;
+			int max_i = minMaxFilaNoNuloPorColumna[j].second;
+			int min_j = minMaxColumnaNoNuloPorFila[i].first;
+			int max_j = minMaxColumnaNoNuloPorFila[i].second;
+			if(min_i == -1 || i < min_i) min_i = i;
+			if(max_i == -1 || i > max_i) max_i = i;
+			if(min_j == -1 || j < min_j) min_j = j;
+			if(max_j == -1 || j > max_j) max_j = j;
+			minMaxColumnaNoNuloPorFila[i] = make_pair(min_j,max_j);
+			minMaxFilaNoNuloPorColumna[j] = make_pair(min_i,max_i);
 		}
 	}
 }
 
-void OperacionesMatriciales::convertirAEsparsa(map<pair<int,int>,double>& mRecipiente,vector<vector<double> >& mFuente){
-	mRecipiente.clear();				// Limpio mRecipiente:
-	// Le agrego sus nuevos valores:
-	for(int i=0;i<mFuente.size();i++){
-		for(int j=0;j<mFuente[i].size();j++){
-			if(std::abs(mFuente[i][j])>10E-6) mRecipiente[std::make_pair(i,j)]=mFuente[i][j];
-		}
-	}
+void OperacionesMatriciales::convertirAEsparsa(map<int,double>& mRecipiente,vector<double>& mFuente){
+    mRecipiente.clear();                
+    for(int i=0;i<mFuente.size();i++) 
+    if(!ES_CASI_CERO(mFuente[i])) mRecipiente[i]=mFuente[i];
+}
+void OperacionesMatriciales::convertirAEsparsa(map<pair<int,int>,double>& mRecipiente
+                                    , vector<vector<double> >& mFuente){
+    mRecipiente.clear();                
+    for(int i=0;i<mFuente.size();i++) for(int j=0;j<mFuente[i].size();j++)
+    if(!ES_CASI_CERO(mFuente[i][j])) mRecipiente[std::make_pair(i,j)]=mFuente[i][j];
+}
+
+void OperacionesMatriciales::convertirAEsparsa(map<pair<int,int>,double>& mRecipiente
+                                    , vector<pair<int,int>>& minMaxFilaNoNuloPorColumna
+                                    , vector<pair<int,int>>& minMaxColumnaNoNuloPorFila
+                                    , vector<vector<double> >& mFuente){
+    mRecipiente.clear();                // Limpio mRecipiente
+    // Inicializo los minMax... con -1, para indicar cuando no fueron cargados
+    minMaxFilaNoNuloPorColumna.clear();
+    minMaxColumnaNoNuloPorFila.clear();
+    minMaxFilaNoNuloPorColumna.resize(mFuente.size());   
+    for(int i=0;i<mFuente.size();i++){
+        minMaxColumnaNoNuloPorFila.resize(mFuente[i].size());   
+        for(int j=0;j<mFuente[i].size();j++){
+            minMaxFilaNoNuloPorColumna[j] = make_pair(-1,-1);
+        }
+    }
+    // Le agrego sus nuevos valores:
+    for(int i=0;i<mFuente.size();i++){
+        for(int j=0;j<mFuente[i].size();j++){
+            if(!ES_CASI_CERO(mFuente[i][j])) {
+                mRecipiente[std::make_pair(i,j)]=mFuente[i][j];
+					 int min_i = minMaxFilaNoNuloPorColumna[j].first;
+					 int max_i = minMaxFilaNoNuloPorColumna[j].second;
+					 int min_j = minMaxColumnaNoNuloPorFila[i].first;
+					 int max_j = minMaxColumnaNoNuloPorFila[i].second;
+					 if(min_i == -1 || i < min_i) min_i = i;
+					 if(max_i == -1 || i > max_i) max_i = i;
+					 if(min_j == -1 || j < min_j) min_j = j;
+					 if(max_j == -1 || j > max_j) max_j = j;
+					 minMaxColumnaNoNuloPorFila[i] = make_pair(min_j,max_j);
+					 minMaxFilaNoNuloPorColumna[j] = make_pair(min_i,max_i);
+            }
+        }
+    }
 }
 
 void OperacionesMatriciales::convertirDeEsparsa(map<pair<int,int>,double>& mFuente,vector<vector<double> >& mRecipiente){
-	// Limpio mRecipiente:
-	for(int i=0;i<mRecipiente.size();i++) mRecipiente[i].clear();
-	mRecipiente.clear();
-	// Le agrego sus nuevos valores:
-	for(const auto &p:mFuente){			// p es de tipo <<Fila i,Columna j>,Valor d>
-		if(mRecipiente.size()<=p.first.first) mRecipiente.resize(p.first.first+1);
-		if(mRecipiente[p.first.first].size()<=p.first.second) mRecipiente[p.first.first].resize(p.first.second+1);
-		mRecipiente[p.first.first][p.first.second]=p.second;
-	}
+    // Limpio mRecipiente:
+    for(int i=0;i<mRecipiente.size();i++) mRecipiente[i].clear();
+    mRecipiente.clear();
+    // Le agrego sus nuevos valores:
+    for(const auto &p:mFuente){            // p es de tipo <<Fila i,Columna j>,Valor d>
+        if(mRecipiente.size()<=p.first.first) mRecipiente.resize(p.first.first+1);
+        if(mRecipiente[p.first.first].size()<=p.first.second) mRecipiente[p.first.first].resize(p.first.second+1);
+        mRecipiente[p.first.first][p.first.second]=p.second;
+    }
 }
+
+/** Precondición: A es cuadrada. Si A pertenece a R nXn, entonces
+minMaxFilaNoNuloPorColumnaEnA.size() = n, minMaxColumnaNoNuloPorFilaEnA.size() = n
+y para todo 0<=j<n,
+minMaxFilaNoNuloPorColumnaEnA[j].first es la mínima fila de A con valor no nulo en la columna j,
+minMaxFilaNoNuloPorColumnaEnA[j].second es la máxima fila de A con valor no nulo en la columna j
+y para todo 0<=i<n,
+minMaxColumnaNoNuloPorFilaEnA[i].first es la mínima columna de A con valor no nulo en la fila i,
+minMaxColumnaNoNuloPorFilaEnA[i].second es la máxima columna de A con valor no nulo en la fila i.*/
+void OperacionesMatriciales::egEsparsa(map<pair<int,int>,double>& A
+                                    , vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
+                                    , vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
+                                    , map<int,double>& b, map<int,double>& x)
+{
+	cout<<"egEsparsa - A:"<<endl;
+	OperacionesMatriciales::imprimirMatrizEsparsa(A);
+	int n = minMaxFilaNoNuloPorColumnaEnA.size();
+	for(int k=0; k<n-1; k++){                        // Recorro columnas
+		cout<<"egEsparsa - k:"<<k<<endl;
+		for(int i = std::max(minMaxFilaNoNuloPorColumnaEnA[k].first,k+1); i <= minMaxFilaNoNuloPorColumnaEnA[k].second; i++){    // Recorro filas
+			cout<<"egEsparsa - i:"<<i<<endl;
+			map<pair<int,int>,double>::iterator itA = A.find(std::make_pair(i,k));
+			if(itA!=A.end()){
+				cout<<"egEsparsa - A(i,k):"<<itA->second<<endl;
+				double m_ik = itA->second / A[std::make_pair(k,k)];
+				cout<<"egEsparsa - m_:"<<i<<","<<k<<": "<<m_ik<<endl;
+				cout<<"egEsparsa - b_:"<<i<<": "<<b[i]<<endl;
+				cout<<"egEsparsa - b_:"<<k<<": "<<b[k]<<endl;
+				for(int j=std::max(k,minMaxColumnaNoNuloPorFilaEnA[i].first); j<=minMaxColumnaNoNuloPorFilaEnA[i].second;j++) // Recorro columnas
+				A[make_pair(i,j)] = A[make_pair(i,j)]-m_ik*A[make_pair(k,j)];  
+				b[i] = b[i]-m_ik*b[k];
+			}
+		}
+		cout<<"egEsparsa - A_"<<k+1<<":"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(A);
+		cout<<"egEsparsa - b_"<<k+1<<":"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(b);
+	}
+	OperacionesMatriciales::resolverTriangularSuperiorEsparsa(A,minMaxFilaNoNuloPorColumnaEnA,minMaxColumnaNoNuloPorFilaEnA,b,x);
+}
+
+/** Resuelve el sistema Ax=b, alojando el resultado en x.
+ Precondición: A es cuadrada y triangular superior. Si A pertenece a R nXn, entonces
+minMaxFilaNoNuloPorColumnaEnA.size() = n, minMaxColumnaNoNuloPorFilaEnA.size() = n
+y para todo 0<=j<n,
+minMaxFilaNoNuloPorColumnaEnA[j].first es la mínima fila de A con valor no nulo en la columna j,
+minMaxFilaNoNuloPorColumnaEnA[j].second es la máxima fila de A con valor no nulo en la columna j
+y para todo 0<=i<n,
+minMaxColumnaNoNuloPorFilaEnA[i].first es la mínima columna de A con valor no nulo en la fila i,
+minMaxColumnaNoNuloPorFilaEnA[i].second es la máxima columna de A con valor no nulo en la fila i.*/
+void OperacionesMatriciales::resolverTriangularSuperiorEsparsa(map<pair<int,int>,double>& A
+                                    , vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
+                                    , vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
+                                    , map<int,double>& b, map<int,double>& x)
+{
+    //Se resuelve el sistema de ecuaciones
+    for(int i=minMaxColumnaNoNuloPorFilaEnA.size()-1 ; i>=0 ; i--){
+		x[i] = b[i];  cout<<"x["<<i<<"]: "<<x[i]<<endl;
+        for(int j=minMaxColumnaNoNuloPorFilaEnA[i].second ; j>=i ; j--){
+            if(i!=j){ x[i] = x[i] - A[make_pair(i,j)]*x[j];  cout<<"x["<<j<<"]:"<<x[j]<<" - A["<<i<<","<<j<<"]: "<<A[make_pair(i,j)]<<endl;}
+            else x[i] = x[i] / A[make_pair(i,i)];
+		}
+    }
+}
+
 
 
