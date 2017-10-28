@@ -62,5 +62,11 @@ class OperacionesMatriciales {
 								, vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
 								, map<int,double>& b, map<int,double>& x);
 
+
+		static void choleskyEsparsa(map<pair<int,int>,double>& A
+											, vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
+											, vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
+											, map<pair<int,int>,double>& L );
+
 };
 #endif

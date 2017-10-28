@@ -321,6 +321,35 @@ void OperacionesMatriciales::egEsparsa(map<pair<int,int>,double>& A
 	OperacionesMatriciales::resolverTriangularSuperiorEsparsa(A,minMaxFilaNoNuloPorColumnaEnA,minMaxColumnaNoNuloPorFilaEnA,b,x);
 }
 
+
+void OperacionesMatriciales::choleskyEsparsa(map<pair<int,int>,double>& A
+                                    , vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
+                                    , vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
+												, map<pair<int,int>,double>& L )
+{
+	int n = minMaxColumnaNoNuloPorFilaEnA.size();
+	L[make_pair(0,0)]=sqrt(A[make_pair(0,0)]);
+	for(int i=max(1,minMaxColumnaNoNuloPorFilaEnA[0].first);i<min(minMaxColumnaNoNuloPorFilaEnA[i].second+1,n);i++)
+		if(A.find(make_pair(i,0))!=A.end()) L[make_pair(i,0)]=A[make_pair(i,0)]/L[make_pair(0,0)];
+
+	for(int j=1; j<n; j++){
+		double sumaFilaj = 0;
+		for(int k=max(0,minMaxColumnaNoNuloPorFilaEnA[j].first);k<min(j,minMaxColumnaNoNuloPorFilaEnA[j].second+1);k++) 
+			if(L.find(make_pair(j,k))!=L.end()) sumaFilaj += pow(L[make_pair(j,k)],2);
+		L[make_pair(j,j)]=sqrt(A[make_pair(j,j)]-sumaFilaj);
+
+		for(int i=j+1;i<n;i++){
+			double sumaIxJ = 0;
+			for(int k=max(0,minMaxColumnaNoNuloPorFilaEnA[j].first);k<min(j,minMaxColumnaNoNuloPorFilaEnA[j].second+1);k++){
+				if(L.find(make_pair(i,k))!=L.end() && L.find(make_pair(j,k))!=L.end()) 
+					sumaIxJ += L[make_pair(i,k)] * L[make_pair(j,k)];
+			}
+			double A_ij = (A.find(make_pair(i,j))!=A.end())?A[make_pair(i,j)]:0;
+			L[make_pair(i,j)] = (A_ij-sumaIxJ)/ L[make_pair(j,j)];
+		}
+	}
+}
+
 /** Resuelve el sistema Ax=b, alojando el resultado en x.
  Precondición: A es cuadrada y triangular superior. Si A pertenece a R nXn, entonces
 minMaxFilaNoNuloPorColumnaEnA.size() = n, minMaxColumnaNoNuloPorFilaEnA.size() = n
