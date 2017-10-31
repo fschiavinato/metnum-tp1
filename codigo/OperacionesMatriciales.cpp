@@ -321,6 +321,28 @@ void OperacionesMatriciales::egEsparsa(map<pair<int,int>,double>& A
 	OperacionesMatriciales::resolverTriangularSuperiorEsparsa(A,minMaxFilaNoNuloPorColumnaEnA,minMaxColumnaNoNuloPorFilaEnA,b,x);
 }
 
+void OperacionesMatriciales::resolverConCholeskyEsparsa(map<pair<int,int>,double>& A
+                                    , vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
+                                    , vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
+									, map<int,double>& b, map<int,double>& x )
+{
+	map<pair<int,int>,double> L;
+	vector<pair<int,int>> minMaxFilaNoNuloPorColumnaEnL;
+	vector<pair<int,int>> minMaxColumnaNoNuloPorFilaEnL;
+	map<pair<int,int>,double> Lt;	
+	vector<pair<int,int>> minMaxFilaNoNuloPorColumnaEnLt;
+	vector<pair<int,int>> minMaxColumnaNoNuloPorFilaEnLt;
+	map<int,double> y;
+
+	OperacionesMatriciales::choleskyEsparsa(A,minMaxFilaNoNuloPorColumnaEnA,minMaxColumnaNoNuloPorFilaEnA,L); // Pueblo L
+	OperacionesMatriciales::transponerMatrizEsparsa(Lt,L);	// Pueblo Lt
+
+	OperacionesMatriciales::delimitarAreaDeValores(L,minMaxFilaNoNuloPorColumnaEnL,minMaxColumnaNoNuloPorFilaEnL);
+	OperacionesMatriciales::delimitarAreaDeValores(Lt,minMaxFilaNoNuloPorColumnaEnLt,minMaxColumnaNoNuloPorFilaEnLt);
+
+	OperacionesMatriciales::resolverTriangularInferiorEsparsa(L,minMaxFilaNoNuloPorColumnaEnL,minMaxColumnaNoNuloPorFilaEnL,b,y);
+	OperacionesMatriciales::resolverTriangularSuperiorEsparsa(Lt,minMaxFilaNoNuloPorColumnaEnLt,minMaxColumnaNoNuloPorFilaEnLt,y,x);
+}
 
 void OperacionesMatriciales::choleskyEsparsa(map<pair<int,int>,double>& A
                                     , vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
@@ -374,5 +396,29 @@ void OperacionesMatriciales::resolverTriangularSuperiorEsparsa(map<pair<int,int>
     }
 }
 
+/** Resuelve el sistema Ax=b, alojando el resultado en x.
+ Precondición: A es cuadrada y triangular inferior. Si A pertenece a R nXn, entonces
+minMaxFilaNoNuloPorColumnaEnA.size() = n, minMaxColumnaNoNuloPorFilaEnA.size() = n
+y para todo 0<=j<n,
+minMaxFilaNoNuloPorColumnaEnA[j].first es la mínima fila de A con valor no nulo en la columna j,
+minMaxFilaNoNuloPorColumnaEnA[j].second es la máxima fila de A con valor no nulo en la columna j
+y para todo 0<=i<n,
+minMaxColumnaNoNuloPorFilaEnA[i].first es la mínima columna de A con valor no nulo en la fila i,
+minMaxColumnaNoNuloPorFilaEnA[i].second es la máxima columna de A con valor no nulo en la fila i.*/
+
+void OperacionesMatriciales::resolverTriangularInferiorEsparsa(map<pair<int,int>,double>& A
+                                    , vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
+                                    , vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
+                                    , map<int,double>& b, map<int,double>& x)
+{
+    //Se resuelve el sistema de ecuaciones
+    for(int i=0; i<minMaxColumnaNoNuloPorFilaEnA.size(); i++){
+		x[i] = b[i];  cout<<"x["<<i<<"]: "<<x[i]<<endl;
+        for(int j=minMaxColumnaNoNuloPorFilaEnA[i].first; j<i; j++){
+            if(i!=j){ x[i] = x[i] - A[make_pair(i,j)]*x[j];  cout<<"x["<<j<<"]:"<<x[j]<<" - A["<<i<<","<<j<<"]: "<<A[make_pair(i,j)]<<endl;}
+            else x[i] = x[i] / A[make_pair(i,i)];
+		}
+    }   
+}
 
 

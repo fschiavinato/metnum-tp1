@@ -7,7 +7,7 @@
 #include "./OperacionesMatricialesTest.h"
 
 int main() {
-	OperacionesMatricialesTest::test06();
+	OperacionesMatricialesTest::test07();
 }
 
 void OperacionesMatricialesTest::test01(){
@@ -201,6 +201,28 @@ void OperacionesMatricialesTest::test05(){
 }
 
 void OperacionesMatricialesTest::test06(){
+	vector<vector<double> > A = vector<vector<double> >(3);
+	for(int i=0;i<3;i++) A[i] = vector<double>(3);
+	A[0][0]=1 ;	A[0][1]=2 ;	A[0][2]=3 ;			// Fila 0 de la matriz A
+	A[1][0]=2 ;	A[1][1]=8 ;	A[1][2]=4 ;			// Fila 1 de la matriz A
+	A[2][0]=3 ;	A[2][1]=4 ;	A[2][2]=11;			// Fila 2 de la matriz A
+	// La matriz de Cholesky de A es {1,0,0;2,2,0;3,-1,1}
+
+	map<pair<int,int>,double> Ae;	
+	vector<pair<int,int>> mMFilaNoNuloPorColumnaEnA;
+	vector<pair<int,int>> mMColumnaNoNuloPorFilaEnA;
+	map<pair<int,int>,double> Le;	
+
+	OperacionesMatriciales::convertirAEsparsa(Ae,A);
+	OperacionesMatriciales::delimitarAreaDeValores(Ae,mMFilaNoNuloPorColumnaEnA,mMColumnaNoNuloPorFilaEnA);
+
+	OperacionesMatriciales::choleskyEsparsa(Ae,mMFilaNoNuloPorColumnaEnA,mMColumnaNoNuloPorFilaEnA,Le);
+
+	cout<<"A:"<<endl;	OperacionesMatricialesTest::imprimirMatriz(A,3,3);
+	cout<<"Le:"<<endl;OperacionesMatriciales::imprimirMatrizEsparsa(Le);
+}
+
+void OperacionesMatricialesTest::test07(){
 	vector<vector<double> > A = vector<vector<double> >(3);
 	for(int i=0;i<3;i++) A[i] = vector<double>(3);
 	A[0][0]=1 ;	A[0][1]=2 ;	A[0][2]=3 ;			// Fila 0 de la matriz A
