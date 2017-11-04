@@ -417,12 +417,12 @@ void OperacionesMatriciales::resolverTriangularSuperiorEsparsa(map<pair<int,int>
 {
 	//Se resuelve el sistema de ecuaciones
 	for(int i=columnasNoNuloPorFilaEnA.size()-1 ; i>=0 ; i--){
-        //if(i%1000==0)cout<<"resolverTriangularSuperior - i: "<<i<<endl;
+        //if(i%1000==0) cout<<"resolverTriangularSuperior - i: "<<i<<endl;
         x[i] = b[i];  
         std::set<int>::reverse_iterator rit;
         for (rit=columnasNoNuloPorFilaEnA[i].rbegin(); rit != columnasNoNuloPorFilaEnA[i].rend(); ++rit){
-            int j=*rit; if(j>=i)continue;
-            //if(i%1000==0)cout<<"resolverTriangularSuperior - j: "<<j<<endl;
+            int j=*rit; if(j<i)break;
+            //if(i%1000==0) cout<<"resolverTriangularSuperior - j: "<<j<<endl;
             if(i!=j)x[i] = x[i] - A[make_pair(i,j)]*x[j];
             else x[i] = x[i] / A[make_pair(i,i)];
         }
