@@ -104,10 +104,14 @@ int main(int argc, char *argv[]) {
 	OperacionesMatriciales::delimitarAreaDeValores(A,cantPixeles,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA);
 	//OperacionesMatriciales::delimitarAreaDeValores(A,mMFilaNoNuloPorColumnaEnA,mMColumnaNoNuloPorFilaEnA);
 	cout<<"INICIO egEsparsa::"<<endl;
-	OperacionesMatriciales::egEsparsa(A,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA,MtXv,zEG);
 
+	OperacionesMatriciales::egEsparsa(A,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA,MtXv,zEG);
 	cout<<"zEG.size: "<< zEG.size()<<endl; 
 	cout<<"zEG:"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(zEG);
+
+	OperacionesMatriciales::egEsparsa(A,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA,MtXv,zCH);
+	cout<<"zCH.size: "<< zEG.size()<<endl; 
+	cout<<"zCH:"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(zCH);
 	return 0;
 }
 

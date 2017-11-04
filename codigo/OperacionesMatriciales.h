@@ -73,6 +73,10 @@ class OperacionesMatriciales {
 								, vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
 								, vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
 								, map<int,double>& b, map<int,double>& x);
+		static void resolverTriangularInferiorEsparsa(map<pair<int,int>,double>& A
+												, vector<set<int>>& filasNoNuloPorColumnaEnA
+												, vector<set<int>>& columnasNoNuloPorFilaEnA
+                                , map<int,double>& b, map<int,double>& x);
 		static void egEsparsa(map<pair<int,int>,double>& A
 								, vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
 								, vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
@@ -85,9 +89,18 @@ class OperacionesMatriciales {
 											, vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
 											, vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
 											, map<pair<int,int>,double>& L );
+		static void choleskyEsparsa(map<pair<int,int>,double>& A
+											, vector<set<int>>& filasNoNuloPorColumnaEnA
+											, vector<set<int>>& filasNoNuloPorColumnaEnL
+											, vector<set<int>>& columnasNoNuloPorFilaEnL
+											, map<pair<int,int>,double>& L );
 		static void resolverConCholeskyEsparsa(map<pair<int,int>,double>& A
                                     , vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
                                     , vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
+									, map<int,double>& b, map<int,double>& x );
+		static void resolverConCholeskyEsparsa(map<pair<int,int>,double>& A
+                                    , vector<set<int>>& filasNoNuloPorColumnaEnA
+                                    , vector<set<int>>& columnasNoNuloPorFilaEnA
 									, map<int,double>& b, map<int,double>& x );
 };
 #endif

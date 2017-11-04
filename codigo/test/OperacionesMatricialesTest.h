@@ -18,5 +18,7 @@ class OperacionesMatricialesTest {
 		static void test05();
 		static void test06();
 		static void test07();
+		static void test08();
+		static void test09();
 };
 #endif
