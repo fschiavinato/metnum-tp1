@@ -1,6 +1,7 @@
 #include <utility>
 #include <map>
 #include <vector>
+#include <algorithm>
 #include <iostream>
 #include <set>
 #include <math.h>
@@ -532,13 +533,13 @@ void OperacionesMatriciales::choleskyEsparsa(map<pair<int,int>,double>& A
             filasNoNuloPorColumnaEnL[j].insert(j);
             columnasNoNuloPorFilaEnL[j].insert(j);
 
-            cout<<"choleskyEsparsa - L["<<j<<","<<j<<"]: "<<Ljj<<endl;
+            if(j%100==1)cout<<"choleskyEsparsa - L["<<j<<","<<j<<"]: "<<Ljj<<endl;
 
-            int max_iA = *(filasNoNuloPorColumnaEnA[j].rbegin());
-            int max_Lj = *(filasNoNuloPorColumnaEnL[j].rbegin());
-            int max_i = max(max_iA,max_Lj);
-            for(int i=j+1;i<=max_i;i++){
-            //for(int i=j+1;i<n;i++){
+            vector<int> filasARecorrer(filasNoNuloPorColumnaEnA[j].size()+filasNoNuloPorColumnaEnL[j].size());
+            std::set_union (filasNoNuloPorColumnaEnA[j].begin(),filasNoNuloPorColumnaEnA[j].end()
+                      ,filasNoNuloPorColumnaEnL[j].begin(),filasNoNuloPorColumnaEnL[j].end(),filasARecorrer.begin());
+            for(const int &i:filasARecorrer){
+                if(j%100==1)cout<<"choleskyEsparsa - i: "<<i<<endl;
                 double sumaIxJ = 0;
                 for(const int &k : columnasNoNuloPorFilaEnL[j]){
                     if(k>=j)break;
@@ -551,7 +552,7 @@ void OperacionesMatriciales::choleskyEsparsa(map<pair<int,int>,double>& A
                     L[make_pair(i,j)] = Lij;
                     filasNoNuloPorColumnaEnL[j].insert(i);
                     columnasNoNuloPorFilaEnL[i].insert(j);
-                    cout<<"choleskyEsparsa - L["<<i<<","<<j<<"]: "<<Lij<<endl;
+                    if(j%100==1)cout<<"choleskyEsparsa - L["<<i<<","<<j<<"]: "<<Lij<<endl;
                 }
             }
         }

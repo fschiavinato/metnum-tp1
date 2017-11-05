@@ -7,8 +7,8 @@
 #include <set>
 #include <string>
 
-#define EPSILON 10E-6
-#define ES_CASI_CERO(x) std::abs(x)<=EPSILON
+#define EPSILON 0.000001
+#define ES_CASI_CERO(x) (std::abs(x)<=EPSILON)
 
 using namespace std;
 
