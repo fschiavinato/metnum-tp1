@@ -131,8 +131,8 @@ void OperacionesMatriciales::imprimirMatrizEsparsa(map<pair<int,int>,double>& M
                                     , vector<pair<int,int>>& minMaxColumnaNoNuloPorFila
 ){
     for (const auto &pair:M) cout << "("<<pair.first.first<<","<<pair.first.second << "): " << pair.second << endl;
-	 for (int i=0; i<minMaxColumnaNoNuloPorFila.size();i++) cout<<"Min / Max Columna No Nula para Fila "<<i<<": "<<minMaxColumnaNoNuloPorFila[i].first<<" / "<<minMaxColumnaNoNuloPorFila[i].second<<endl;
-	 for (int j=0; j<minMaxFilaNoNuloPorColumna.size();j++) cout<<"Min / Max Fila No Nula para Columna "<<j<<": "<<minMaxFilaNoNuloPorColumna[j].first<<" / "<<minMaxFilaNoNuloPorColumna[j].second<<endl;
+     for (int i=0; i<minMaxColumnaNoNuloPorFila.size();i++) cout<<"Min / Max Columna No Nula para Fila "<<i<<": "<<minMaxColumnaNoNuloPorFila[i].first<<" / "<<minMaxColumnaNoNuloPorFila[i].second<<endl;
+     for (int j=0; j<minMaxFilaNoNuloPorColumna.size();j++) cout<<"Min / Max Fila No Nula para Columna "<<j<<": "<<minMaxFilaNoNuloPorColumna[j].first<<" / "<<minMaxFilaNoNuloPorColumna[j].second<<endl;
 }
 
 void OperacionesMatriciales::imprimirMatrizEsparsa(map<pair<int,int>,double>& M){
@@ -140,6 +140,14 @@ void OperacionesMatriciales::imprimirMatrizEsparsa(map<pair<int,int>,double>& M)
 }
 void OperacionesMatriciales::imprimirMatrizEsparsa(map<int,double>& M){
     for (const auto &pair:M) cout << "("<<pair.first<<"): " << pair.second << endl;
+}
+
+void OperacionesMatriciales::imprimirMatrizEsparsaProfundidades(map<int,double>& M, int width, int height){
+    
+    for (const auto &pair:M){
+      if (pair.first % width == 0) cout << endl;    
+     cout << pair.second << " ";
+    }
 }
 
 void OperacionesMatriciales::transponerMatrizEsparsa(map<pair<int,int>,double>& matrizResultado,map<pair<int,int>,double>& matrizOriginal){
@@ -178,75 +186,75 @@ void OperacionesMatriciales::multiplicarMatricesEsparsas(map<pair<int,int>,doubl
         int columna = p.first.second;
         double valor = p.second;
         aux[columna].first.insert(std::make_pair(fila,valor));
-		//if(ES_CASI_CERO(valor)) cout<<"Valor en m1 nulo - posición: "<<fila<<","<<columna<<endl;
+        //if(ES_CASI_CERO(valor)) cout<<"Valor en m1 nulo - posición: "<<fila<<","<<columna<<endl;
     }
     for(const auto &p:m2){            // p es de tipo <<Fila i,Columna j>,Valor d>
         int fila = p.first.first;
         int columna = p.first.second;
         double valor = p.second;
         aux[fila].second.insert(std::make_pair(columna,valor));
-		//if(ES_CASI_CERO(valor)) cout<<"Valor en m2 nulo - posición: "<<fila<<","<<columna<<endl;
+        //if(ES_CASI_CERO(valor)) cout<<"Valor en m2 nulo - posición: "<<fila<<","<<columna<<endl;
     }
 
     for(const auto &p:aux){        // p es de tipo <int k, pair< set<pair<int,double> , set<pair<int,double> > >
         for(const auto &p1:p.second.first){        // p1 es de tipo pair<int filaM1,double M1[filaM1,k]>
             for(const auto &p2:p.second.second){        // p2 es de tipo pair<int columnaM2,double M2[k,columnaM2]>
-					if(ES_CASI_CERO(p1.second)||ES_CASI_CERO(p2.second)){
-						//cout<<"Valor de A nulo -- posición: "<<p1.first<<","<<p2.first;
-						//cout<<" -- Valores: "<<p1.second<<" y "<<p2.second<<endl;
-					}
-					else{
+                    if(ES_CASI_CERO(p1.second)||ES_CASI_CERO(p2.second)){
+                        //cout<<"Valor de A nulo -- posición: "<<p1.first<<","<<p2.first;
+                        //cout<<" -- Valores: "<<p1.second<<" y "<<p2.second<<endl;
+                    }
+                    else{
                 pair<int,int> posicionMR = std::make_pair(p1.first,p2.first);
                 mR[posicionMR] = mR[posicionMR] + p1.second*p2.second;
-					}
+                    }
             }
         }
     }
 
-	 // Cuenta de valores cero finales:
-	 int iCantCeros = 0;
+     // Cuenta de valores cero finales:
+     int iCantCeros = 0;
     for(const auto &p:mR) if(ES_CASI_CERO(p.second)) iCantCeros++;
-	 cout<<"Cant Ceros Final: "<<iCantCeros<<endl;
+     cout<<"Cant Ceros Final: "<<iCantCeros<<endl;
 }
 
 void OperacionesMatriciales::delimitarAreaDeValores(map<pair<int,int>,double>& M, int n
-												, vector<set<int>>& filasNoNuloPorColumnaEnA
-												, vector<set<int>>& columnasNoNuloPorFilaEnA){
-	filasNoNuloPorColumnaEnA.clear(); filasNoNuloPorColumnaEnA.resize(n);
-	columnasNoNuloPorFilaEnA.clear(); columnasNoNuloPorFilaEnA.resize(n);
-	for(const auto &p:M){            		// p es de tipo <<Fila i,Columna j>,Valor d>
-		int i = p.first.first;					// Fila i
-		int j = p.first.second;					// Columna j
-		if(!ES_CASI_CERO(p.second)){
-			filasNoNuloPorColumnaEnA[j].insert(i);
-			columnasNoNuloPorFilaEnA[i].insert(j);
-		}
-	}
+                                                , vector<set<int>>& filasNoNuloPorColumnaEnA
+                                                , vector<set<int>>& columnasNoNuloPorFilaEnA){
+    filasNoNuloPorColumnaEnA.clear(); filasNoNuloPorColumnaEnA.resize(n);
+    columnasNoNuloPorFilaEnA.clear(); columnasNoNuloPorFilaEnA.resize(n);
+    for(const auto &p:M){                   // p es de tipo <<Fila i,Columna j>,Valor d>
+        int i = p.first.first;                  // Fila i
+        int j = p.first.second;                 // Columna j
+        if(!ES_CASI_CERO(p.second)){
+            filasNoNuloPorColumnaEnA[j].insert(i);
+            columnasNoNuloPorFilaEnA[i].insert(j);
+        }
+    }
 }
 
 void OperacionesMatriciales::delimitarAreaDeValores(map<pair<int,int>,double>& M
                                     , vector<pair<int,int>>& minMaxFilaNoNuloPorColumna
                                     , vector<pair<int,int>>& minMaxColumnaNoNuloPorFila){
-	minMaxFilaNoNuloPorColumna.clear();
-	minMaxColumnaNoNuloPorFila.clear();
-	for(const auto &p:M){            		// p es de tipo <<Fila i,Columna j>,Valor d>
-		int i = p.first.first;					// Fila i
-		int j = p.first.second;					// Columna j
-		if(minMaxColumnaNoNuloPorFila.size()<=i) minMaxColumnaNoNuloPorFila.resize(i+1,make_pair(-1,-1));
-		if(minMaxFilaNoNuloPorColumna.size()<=j) minMaxFilaNoNuloPorColumna.resize(j+1,make_pair(-1,-1));
-		if(!ES_CASI_CERO(p.second)){
-			int min_i = minMaxFilaNoNuloPorColumna[j].first;
-			int max_i = minMaxFilaNoNuloPorColumna[j].second;
-			int min_j = minMaxColumnaNoNuloPorFila[i].first;
-			int max_j = minMaxColumnaNoNuloPorFila[i].second;
-			if(min_i == -1 || i < min_i) min_i = i;
-			if(max_i == -1 || i > max_i) max_i = i;
-			if(min_j == -1 || j < min_j) min_j = j;
-			if(max_j == -1 || j > max_j) max_j = j;
-			minMaxColumnaNoNuloPorFila[i] = make_pair(min_j,max_j);
-			minMaxFilaNoNuloPorColumna[j] = make_pair(min_i,max_i);
-		}else M.erase(p.first);
-	}
+    minMaxFilaNoNuloPorColumna.clear();
+    minMaxColumnaNoNuloPorFila.clear();
+    for(const auto &p:M){                   // p es de tipo <<Fila i,Columna j>,Valor d>
+        int i = p.first.first;                  // Fila i
+        int j = p.first.second;                 // Columna j
+        if(minMaxColumnaNoNuloPorFila.size()<=i) minMaxColumnaNoNuloPorFila.resize(i+1,make_pair(-1,-1));
+        if(minMaxFilaNoNuloPorColumna.size()<=j) minMaxFilaNoNuloPorColumna.resize(j+1,make_pair(-1,-1));
+        if(!ES_CASI_CERO(p.second)){
+            int min_i = minMaxFilaNoNuloPorColumna[j].first;
+            int max_i = minMaxFilaNoNuloPorColumna[j].second;
+            int min_j = minMaxColumnaNoNuloPorFila[i].first;
+            int max_j = minMaxColumnaNoNuloPorFila[i].second;
+            if(min_i == -1 || i < min_i) min_i = i;
+            if(max_i == -1 || i > max_i) max_i = i;
+            if(min_j == -1 || j < min_j) min_j = j;
+            if(max_j == -1 || j > max_j) max_j = j;
+            minMaxColumnaNoNuloPorFila[i] = make_pair(min_j,max_j);
+            minMaxFilaNoNuloPorColumna[j] = make_pair(min_i,max_i);
+        }else M.erase(p.first);
+    }
 }
 
 void OperacionesMatriciales::convertirAEsparsa(map<int,double>& mRecipiente,vector<double>& mFuente){
@@ -281,16 +289,16 @@ void OperacionesMatriciales::convertirAEsparsa(map<pair<int,int>,double>& mRecip
         for(int j=0;j<mFuente[i].size();j++){
             if(!ES_CASI_CERO(mFuente[i][j])) {
                 mRecipiente[std::make_pair(i,j)]=mFuente[i][j];
-					 int min_i = minMaxFilaNoNuloPorColumna[j].first;
-					 int max_i = minMaxFilaNoNuloPorColumna[j].second;
-					 int min_j = minMaxColumnaNoNuloPorFila[i].first;
-					 int max_j = minMaxColumnaNoNuloPorFila[i].second;
-					 if(min_i == -1 || i < min_i) min_i = i;
-					 if(max_i == -1 || i > max_i) max_i = i;
-					 if(min_j == -1 || j < min_j) min_j = j;
-					 if(max_j == -1 || j > max_j) max_j = j;
-					 minMaxColumnaNoNuloPorFila[i] = make_pair(min_j,max_j);
-					 minMaxFilaNoNuloPorColumna[j] = make_pair(min_i,max_i);
+                     int min_i = minMaxFilaNoNuloPorColumna[j].first;
+                     int max_i = minMaxFilaNoNuloPorColumna[j].second;
+                     int min_j = minMaxColumnaNoNuloPorFila[i].first;
+                     int max_j = minMaxColumnaNoNuloPorFila[i].second;
+                     if(min_i == -1 || i < min_i) min_i = i;
+                     if(max_i == -1 || i > max_i) max_i = i;
+                     if(min_j == -1 || j < min_j) min_j = j;
+                     if(max_j == -1 || j > max_j) max_j = j;
+                     minMaxColumnaNoNuloPorFila[i] = make_pair(min_j,max_j);
+                     minMaxFilaNoNuloPorColumna[j] = make_pair(min_i,max_i);
             }
         }
     }
@@ -321,73 +329,73 @@ void OperacionesMatriciales::egEsparsa(map<pair<int,int>,double>& A
                                     , vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
                                     , map<int,double>& b, map<int,double>& x)
 {
-	//cout<<"egEsparsa - A:"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(A);
-	int n = minMaxFilaNoNuloPorColumnaEnA.size();
-	for(int k=0; k<n-1; k++){                        // Recorro columnas
-		if(k%100 ==0) cout<<"egEsparsa - k:"<<k<<endl;
-		for(int i = std::max(minMaxFilaNoNuloPorColumnaEnA[k].first,k+1); i <= minMaxFilaNoNuloPorColumnaEnA[k].second; i++){    // Recorro filas
-			//cout<<"egEsparsa - i:"<<i<<endl;
-			map<pair<int,int>,double>::iterator itA = A.find(std::make_pair(i,k));
-			if(itA!=A.end()){
-				//cout<<"egEsparsa - A(i,k):"<<itA->second<<endl;
-				double m_ik = itA->second / A[std::make_pair(k,k)];
-				//cout<<"egEsparsa - m_:"<<i<<","<<k<<": "<<m_ik<<endl;
-				//cout<<"egEsparsa - b_:"<<i<<": "<<b[i]<<endl;
-				//cout<<"egEsparsa - b_:"<<k<<": "<<b[k]<<endl;
-				for(int j=std::max(k,minMaxColumnaNoNuloPorFilaEnA[i].first); j<=minMaxColumnaNoNuloPorFilaEnA[i].second;j++) // Recorro columnas
-				A[make_pair(i,j)] = A[make_pair(i,j)]-m_ik*A[make_pair(k,j)];  
-				b[i] = b[i]-m_ik*b[k];
-			}
-		}
-		//cout<<"egEsparsa - A_"<<k+1<<":"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(A);
-		//cout<<"egEsparsa - b_"<<k+1<<":"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(b);
-	}
-	OperacionesMatriciales::resolverTriangularSuperiorEsparsa(A,minMaxFilaNoNuloPorColumnaEnA,minMaxColumnaNoNuloPorFilaEnA,b,x);
+    //cout<<"egEsparsa - A:"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(A);
+    int n = minMaxFilaNoNuloPorColumnaEnA.size();
+    for(int k=0; k<n-1; k++){                        // Recorro columnas
+        //if(k%100 ==0) cout<<"egEsparsa - k:"<<k<<endl;
+        for(int i = std::max(minMaxFilaNoNuloPorColumnaEnA[k].first,k+1); i <= minMaxFilaNoNuloPorColumnaEnA[k].second; i++){    // Recorro filas
+            //cout<<"egEsparsa - i:"<<i<<endl;
+            map<pair<int,int>,double>::iterator itA = A.find(std::make_pair(i,k));
+            if(itA!=A.end()){
+                //cout<<"egEsparsa - A(i,k):"<<itA->second<<endl;
+                double m_ik = itA->second / A[std::make_pair(k,k)];
+                //cout<<"egEsparsa - m_:"<<i<<","<<k<<": "<<m_ik<<endl;
+                //cout<<"egEsparsa - b_:"<<i<<": "<<b[i]<<endl;
+                //cout<<"egEsparsa - b_:"<<k<<": "<<b[k]<<endl;
+                for(int j=std::max(k,minMaxColumnaNoNuloPorFilaEnA[i].first); j<=minMaxColumnaNoNuloPorFilaEnA[i].second;j++) // Recorro columnas
+                A[make_pair(i,j)] = A[make_pair(i,j)]-m_ik*A[make_pair(k,j)];  
+                b[i] = b[i]-m_ik*b[k];
+            }
+        }
+        //cout<<"egEsparsa - A_"<<k+1<<":"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(A);
+        //cout<<"egEsparsa - b_"<<k+1<<":"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(b);
+    }
+    OperacionesMatriciales::resolverTriangularSuperiorEsparsa(A,minMaxFilaNoNuloPorColumnaEnA,minMaxColumnaNoNuloPorFilaEnA,b,x);
 }
 
 void OperacionesMatriciales::resolverConCholeskyEsparsa(map<pair<int,int>,double>& A
                                     , vector<set<int> >& filasNoNuloPorColumnaEnA
                                     , vector<set<int> >& columnasNoNuloPorFilaEnA
-									, map<int,double>& b, map<int,double>& x )
+                                    , map<int,double>& b, map<int,double>& x )
 {
-	map<pair<int,int>,double> L;
-	vector<set<int> > filasNoNuloPorColumnaEnL;
-	vector<set<int> > columnasNoNuloPorFilaEnL;
-	map<pair<int,int>,double> Lt;	
-	vector<set<int> > filasNoNuloPorColumnaEnLt;
-	vector<set<int> > columnasNoNuloPorFilaEnLt;
-	map<int,double> y;
+    map<pair<int,int>,double> L;
+    vector<set<int> > filasNoNuloPorColumnaEnL;
+    vector<set<int> > columnasNoNuloPorFilaEnL;
+    map<pair<int,int>,double> Lt;   
+    vector<set<int> > filasNoNuloPorColumnaEnLt;
+    vector<set<int> > columnasNoNuloPorFilaEnLt;
+    map<int,double> y;
 
     int n = columnasNoNuloPorFilaEnA.size();
-	OperacionesMatriciales::choleskyEsparsa(A,filasNoNuloPorColumnaEnA,filasNoNuloPorColumnaEnL,columnasNoNuloPorFilaEnL,L);
-	OperacionesMatriciales::transponerMatrizEsparsa(Lt,L);	// Pueblo Lt
-	OperacionesMatriciales::delimitarAreaDeValores(Lt,n,filasNoNuloPorColumnaEnLt,columnasNoNuloPorFilaEnLt);
+    OperacionesMatriciales::choleskyEsparsa(A,filasNoNuloPorColumnaEnA,filasNoNuloPorColumnaEnL,columnasNoNuloPorFilaEnL,L);
+    OperacionesMatriciales::transponerMatrizEsparsa(Lt,L);  // Pueblo Lt
+    OperacionesMatriciales::delimitarAreaDeValores(Lt,n,filasNoNuloPorColumnaEnLt,columnasNoNuloPorFilaEnLt);
 
-	OperacionesMatriciales::resolverTriangularInferiorEsparsa(L,filasNoNuloPorColumnaEnL,columnasNoNuloPorFilaEnL,b,y);
-	OperacionesMatriciales::resolverTriangularSuperiorEsparsa(Lt,filasNoNuloPorColumnaEnLt,columnasNoNuloPorFilaEnLt,y,x);
+    OperacionesMatriciales::resolverTriangularInferiorEsparsa(L,filasNoNuloPorColumnaEnL,columnasNoNuloPorFilaEnL,b,y);
+    OperacionesMatriciales::resolverTriangularSuperiorEsparsa(Lt,filasNoNuloPorColumnaEnLt,columnasNoNuloPorFilaEnLt,y,x);
 }
 
 void OperacionesMatriciales::resolverConCholeskyEsparsa(map<pair<int,int>,double>& A
                                     , vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
                                     , vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
-									, map<int,double>& b, map<int,double>& x )
+                                    , map<int,double>& b, map<int,double>& x )
 {
-	map<pair<int,int>,double> L;
-	vector<pair<int,int>> minMaxFilaNoNuloPorColumnaEnL;
-	vector<pair<int,int>> minMaxColumnaNoNuloPorFilaEnL;
-	map<pair<int,int>,double> Lt;	
-	vector<pair<int,int>> minMaxFilaNoNuloPorColumnaEnLt;
-	vector<pair<int,int>> minMaxColumnaNoNuloPorFilaEnLt;
-	map<int,double> y;
+    map<pair<int,int>,double> L;
+    vector<pair<int,int>> minMaxFilaNoNuloPorColumnaEnL;
+    vector<pair<int,int>> minMaxColumnaNoNuloPorFilaEnL;
+    map<pair<int,int>,double> Lt;   
+    vector<pair<int,int>> minMaxFilaNoNuloPorColumnaEnLt;
+    vector<pair<int,int>> minMaxColumnaNoNuloPorFilaEnLt;
+    map<int,double> y;
 
-	OperacionesMatriciales::choleskyEsparsa(A,minMaxFilaNoNuloPorColumnaEnA,minMaxColumnaNoNuloPorFilaEnA,L); // Pueblo L
-	OperacionesMatriciales::transponerMatrizEsparsa(Lt,L);	// Pueblo Lt
+    OperacionesMatriciales::choleskyEsparsa(A,minMaxFilaNoNuloPorColumnaEnA,minMaxColumnaNoNuloPorFilaEnA,L); // Pueblo L
+    OperacionesMatriciales::transponerMatrizEsparsa(Lt,L);  // Pueblo Lt
 
-	OperacionesMatriciales::delimitarAreaDeValores(L,minMaxFilaNoNuloPorColumnaEnL,minMaxColumnaNoNuloPorFilaEnL);
-	OperacionesMatriciales::delimitarAreaDeValores(Lt,minMaxFilaNoNuloPorColumnaEnLt,minMaxColumnaNoNuloPorFilaEnLt);
+    OperacionesMatriciales::delimitarAreaDeValores(L,minMaxFilaNoNuloPorColumnaEnL,minMaxColumnaNoNuloPorFilaEnL);
+    OperacionesMatriciales::delimitarAreaDeValores(Lt,minMaxFilaNoNuloPorColumnaEnLt,minMaxColumnaNoNuloPorFilaEnLt);
 
-	OperacionesMatriciales::resolverTriangularInferiorEsparsa(L,minMaxFilaNoNuloPorColumnaEnL,minMaxColumnaNoNuloPorFilaEnL,b,y);
-	OperacionesMatriciales::resolverTriangularSuperiorEsparsa(Lt,minMaxFilaNoNuloPorColumnaEnLt,minMaxColumnaNoNuloPorFilaEnLt,y,x);
+    OperacionesMatriciales::resolverTriangularInferiorEsparsa(L,minMaxFilaNoNuloPorColumnaEnL,minMaxColumnaNoNuloPorFilaEnL,b,y);
+    OperacionesMatriciales::resolverTriangularSuperiorEsparsa(Lt,minMaxFilaNoNuloPorColumnaEnLt,minMaxColumnaNoNuloPorFilaEnLt,y,x);
 }
 
 /** Precondición: A es cuadrada. Si A pertenece a R nXn, entonces */
@@ -397,49 +405,49 @@ void OperacionesMatriciales::egEsparsa(map<pair<int,int>,double>& A
                                     , map<int,double>& b, map<int,double>& x)
 {
 
-	/*cout<<"A sin triangular"<<endl;
-	for(int i=0;i <filasNoNuloPorColumnaEnA.size();i++){
-		double Aii = A[make_pair(i,i)];
-		cout<<"A("<<i<<","<<i<<"): "<<Aii<<endl;
-	}*/
-	int n = filasNoNuloPorColumnaEnA.size();
-	for(int k=0; k<n-1; k++){                        // Recorro columnas
-		double Akk = A[make_pair(k,k)];
-		//if(k%1000 ==0) cout<<"egEsparsa - k:"<<k<<" - A(k,k): "<<Akk<<endl;
-		for(const int &i: filasNoNuloPorColumnaEnA[k]){
-			if(i<k+1)continue;
-			map<pair<int,int>,double>::iterator itA = A.find(std::make_pair(i,k));
-			if(itA!=A.end()){
-				double Aik = A[make_pair(i,k)];
-				double m_ik = Aik/Akk;
-				//if(k%1000 ==0)cout<<"i: "<<i<<" - Aik: "<<Aik<<" - Akk: "<<Akk<<"- (Aik/Akk): "<<(Aik/Akk)<<" - m_ik: "<<m_ik<<endl;
-				for(const int &j:columnasNoNuloPorFilaEnA[i]){
-					double Aij = A[make_pair(i,j)];
-					double Akj = A[make_pair(k,j)];
-					A[make_pair(i,j)] = Aij-m_ik*Akj;  
-					//if(k%1000==0) cout<<"j: "<<j<<" - Aij: "<<Aij<<" - Akj: "<<Akj<<" - (Aij-m_ik*Akj): "<<(Aij-m_ik*Akj)<<"- A[make_pair(i,j)]: "<<A[make_pair(i,j)]<<endl;
-				}
-				b[i] = b[i]-m_ik*b[k];
-			}
-		}
-	}
-	/*cout<<"A triangulada"<<endl;
-	for(int i=0;i <filasNoNuloPorColumnaEnA.size();i++){
-		double Aii = A[make_pair(i,i)];
-		cout<<"A("<<i<<","<<i<<"): "<<Aii<<endl;
-	}*/
+    /*cout<<"A sin triangular"<<endl;
+    for(int i=0;i <filasNoNuloPorColumnaEnA.size();i++){
+        double Aii = A[make_pair(i,i)];
+        cout<<"A("<<i<<","<<i<<"): "<<Aii<<endl;
+    }*/
+    int n = filasNoNuloPorColumnaEnA.size();
+    for(int k=0; k<n-1; k++){                        // Recorro columnas
+        double Akk = A[make_pair(k,k)];
+        //if(k%1000 ==0) cout<<"egEsparsa - k:"<<k<<" - A(k,k): "<<Akk<<endl;
+        for(const int &i: filasNoNuloPorColumnaEnA[k]){
+            if(i<k+1)continue;
+            map<pair<int,int>,double>::iterator itA = A.find(std::make_pair(i,k));
+            if(itA!=A.end()){
+                double Aik = A[make_pair(i,k)];
+                double m_ik = Aik/Akk;
+                //if(k%1000 ==0)cout<<"i: "<<i<<" - Aik: "<<Aik<<" - Akk: "<<Akk<<"- (Aik/Akk): "<<(Aik/Akk)<<" - m_ik: "<<m_ik<<endl;
+                for(const int &j:columnasNoNuloPorFilaEnA[i]){
+                    double Aij = A[make_pair(i,j)];
+                    double Akj = A[make_pair(k,j)];
+                    A[make_pair(i,j)] = Aij-m_ik*Akj;  
+                    //if(k%1000==0) cout<<"j: "<<j<<" - Aij: "<<Aij<<" - Akj: "<<Akj<<" - (Aij-m_ik*Akj): "<<(Aij-m_ik*Akj)<<"- A[make_pair(i,j)]: "<<A[make_pair(i,j)]<<endl;
+                }
+                b[i] = b[i]-m_ik*b[k];
+            }
+        }
+    }
+    /*cout<<"A triangulada"<<endl;
+    for(int i=0;i <filasNoNuloPorColumnaEnA.size();i++){
+        double Aii = A[make_pair(i,i)];
+        cout<<"A("<<i<<","<<i<<"): "<<Aii<<endl;
+    }*/
 
     // Recalculo dimensiones no nulas de A:
-	OperacionesMatriciales::delimitarAreaDeValores(A,n,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA);
-	OperacionesMatriciales::resolverTriangularSuperiorEsparsa(A,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA,b,x);
+    OperacionesMatriciales::delimitarAreaDeValores(A,n,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA);
+    OperacionesMatriciales::resolverTriangularSuperiorEsparsa(A,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA,b,x);
 }
 void OperacionesMatriciales::resolverTriangularSuperiorEsparsa(map<pair<int,int>,double>& A
-												, vector<set<int>>& filasNoNuloPorColumnaEnA
-												, vector<set<int>>& columnasNoNuloPorFilaEnA
+                                                , vector<set<int>>& filasNoNuloPorColumnaEnA
+                                                , vector<set<int>>& columnasNoNuloPorFilaEnA
                                     , map<int,double>& b, map<int,double>& x)
 {
-	//Se resuelve el sistema de ecuaciones
-	for(int i=columnasNoNuloPorFilaEnA.size()-1 ; i>=0 ; i--){
+    //Se resuelve el sistema de ecuaciones
+    for(int i=columnasNoNuloPorFilaEnA.size()-1 ; i>=0 ; i--){
         //if(i%1000==0) cout<<"resolverTriangularSuperior - i: "<<i<<endl;
         x[i] = b[i];  
         std::set<int>::reverse_iterator rit;
@@ -449,36 +457,36 @@ void OperacionesMatriciales::resolverTriangularSuperiorEsparsa(map<pair<int,int>
             if(i!=j)x[i] = x[i] - A[make_pair(i,j)]*x[j];
             else x[i] = x[i] / A[make_pair(i,i)];
         }
-	}
+    }
 }
 
 
 void OperacionesMatriciales::choleskyEsparsa(map<pair<int,int>,double>& A
                                     , vector<pair<int,int>>& minMaxFilaNoNuloPorColumnaEnA
                                     , vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
-												, map<pair<int,int>,double>& L )
+                                                , map<pair<int,int>,double>& L )
 {
-	int n = minMaxColumnaNoNuloPorFilaEnA.size();
-	L[make_pair(0,0)]=sqrt(A[make_pair(0,0)]);
-	for(int i=max(1,minMaxColumnaNoNuloPorFilaEnA[0].first);i<min(minMaxColumnaNoNuloPorFilaEnA[i].second+1,n);i++)
-		if(A.find(make_pair(i,0))!=A.end()) L[make_pair(i,0)]=A[make_pair(i,0)]/L[make_pair(0,0)];
+    int n = minMaxColumnaNoNuloPorFilaEnA.size();
+    L[make_pair(0,0)]=sqrt(A[make_pair(0,0)]);
+    for(int i=max(1,minMaxColumnaNoNuloPorFilaEnA[0].first);i<min(minMaxColumnaNoNuloPorFilaEnA[i].second+1,n);i++)
+        if(A.find(make_pair(i,0))!=A.end()) L[make_pair(i,0)]=A[make_pair(i,0)]/L[make_pair(0,0)];
 
-	for(int j=1; j<n; j++){
-		double sumaFilaj = 0;
-		for(int k=max(0,minMaxColumnaNoNuloPorFilaEnA[j].first);k<min(j,minMaxColumnaNoNuloPorFilaEnA[j].second+1);k++) 
-			if(L.find(make_pair(j,k))!=L.end()) sumaFilaj += pow(L[make_pair(j,k)],2);
-		L[make_pair(j,j)]=sqrt(A[make_pair(j,j)]-sumaFilaj);
+    for(int j=1; j<n; j++){
+        double sumaFilaj = 0;
+        for(int k=max(0,minMaxColumnaNoNuloPorFilaEnA[j].first);k<min(j,minMaxColumnaNoNuloPorFilaEnA[j].second+1);k++) 
+            if(L.find(make_pair(j,k))!=L.end()) sumaFilaj += pow(L[make_pair(j,k)],2);
+        L[make_pair(j,j)]=sqrt(A[make_pair(j,j)]-sumaFilaj);
 
-		for(int i=j+1;i<n;i++){
-			double sumaIxJ = 0;
-			for(int k=max(0,minMaxColumnaNoNuloPorFilaEnA[j].first);k<min(j,minMaxColumnaNoNuloPorFilaEnA[j].second+1);k++){
-				if(L.find(make_pair(i,k))!=L.end() && L.find(make_pair(j,k))!=L.end()) 
-					sumaIxJ += L[make_pair(i,k)] * L[make_pair(j,k)];
-			}
-			double A_ij = (A.find(make_pair(i,j))!=A.end())?A[make_pair(i,j)]:0;
-			L[make_pair(i,j)] = (A_ij-sumaIxJ)/ L[make_pair(j,j)];
-		}
-	}
+        for(int i=j+1;i<n;i++){
+            double sumaIxJ = 0;
+            for(int k=max(0,minMaxColumnaNoNuloPorFilaEnA[j].first);k<min(j,minMaxColumnaNoNuloPorFilaEnA[j].second+1);k++){
+                if(L.find(make_pair(i,k))!=L.end() && L.find(make_pair(j,k))!=L.end()) 
+                    sumaIxJ += L[make_pair(i,k)] * L[make_pair(j,k)];
+            }
+            double A_ij = (A.find(make_pair(i,j))!=A.end())?A[make_pair(i,j)]:0;
+            L[make_pair(i,j)] = (A_ij-sumaIxJ)/ L[make_pair(j,j)];
+        }
+    }
 }
 
 
@@ -489,15 +497,15 @@ void OperacionesMatriciales::choleskyEsparsa(map<pair<int,int>,double>& A
                                             , map<pair<int,int>,double>& L )
 {
 
-    cout<<"choleskyEsparsa INICIO"<<endl;
-	int n = filasNoNuloPorColumnaEnA.size();
+    //cout<<"choleskyEsparsa INICIO"<<endl;
+    int n = filasNoNuloPorColumnaEnA.size();
     filasNoNuloPorColumnaEnL.clear(); filasNoNuloPorColumnaEnL.resize(n);
     columnasNoNuloPorFilaEnL.clear(); columnasNoNuloPorFilaEnL.resize(n);
 
     double L00 = sqrt(A[make_pair(0,0)]);
     //cout<<"choleskyEsparsa - LOO: "<<L00<<endl;
     if(!ES_CASI_CERO(L00)){
-    	L[make_pair(0,0)]= L00;
+        L[make_pair(0,0)]= L00;
         filasNoNuloPorColumnaEnL[0].insert(0);
         columnasNoNuloPorFilaEnL[0].insert(0);
 
@@ -517,12 +525,12 @@ void OperacionesMatriciales::choleskyEsparsa(map<pair<int,int>,double>& A
     }
 
     
-	for(int j=1; j<n; j++){
-        if(j%100==1)cout<<"choleskyEsparsa - j: "<<j<<endl;
-		double sumaFilaj = 0;
+    for(int j=1; j<n; j++){
+        //if(j%100==1)cout<<"choleskyEsparsa - j: "<<j<<endl;
+        double sumaFilaj = 0;
         for(const int &k : columnasNoNuloPorFilaEnL[j]){
             if(k>=j)break;
-			//if(L.find(make_pair(j,k))!=L.end()) 
+            //if(L.find(make_pair(j,k))!=L.end()) 
             sumaFilaj += pow(L[make_pair(j,k)],2);
         }
         //double Ajj = (A.find(make_pair(j,j))!=A.end())?A[make_pair(j,j)]:0;
@@ -533,13 +541,13 @@ void OperacionesMatriciales::choleskyEsparsa(map<pair<int,int>,double>& A
             filasNoNuloPorColumnaEnL[j].insert(j);
             columnasNoNuloPorFilaEnL[j].insert(j);
 
-            if(j%100==1)cout<<"choleskyEsparsa - L["<<j<<","<<j<<"]: "<<Ljj<<endl;
+            //if(j%100==1)cout<<"choleskyEsparsa - L["<<j<<","<<j<<"]: "<<Ljj<<endl;
 
             vector<int> filasARecorrer(filasNoNuloPorColumnaEnA[j].size()+filasNoNuloPorColumnaEnL[j].size());
             std::set_union (filasNoNuloPorColumnaEnA[j].begin(),filasNoNuloPorColumnaEnA[j].end()
                       ,filasNoNuloPorColumnaEnL[j].begin(),filasNoNuloPorColumnaEnL[j].end(),filasARecorrer.begin());
             for(const int &i:filasARecorrer){
-                if(j%100==1)cout<<"choleskyEsparsa - i: "<<i<<endl;
+                //if(j%100==1)cout<<"choleskyEsparsa - i: "<<i<<endl;
                 double sumaIxJ = 0;
                 for(const int &k : columnasNoNuloPorFilaEnL[j]){
                     if(k>=j)break;
@@ -552,11 +560,11 @@ void OperacionesMatriciales::choleskyEsparsa(map<pair<int,int>,double>& A
                     L[make_pair(i,j)] = Lij;
                     filasNoNuloPorColumnaEnL[j].insert(i);
                     columnasNoNuloPorFilaEnL[i].insert(j);
-                    if(j%100==1)cout<<"choleskyEsparsa - L["<<i<<","<<j<<"]: "<<Lij<<endl;
+                   // if(j%100==1)cout<<"choleskyEsparsa - L["<<i<<","<<j<<"]: "<<Lij<<endl;
                 }
             }
         }
-	}
+    }
 }
 
 /** Resuelve el sistema Ax=b, alojando el resultado en x.
@@ -573,16 +581,16 @@ void OperacionesMatriciales::resolverTriangularSuperiorEsparsa(map<pair<int,int>
                                     , vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
                                     , map<int,double>& b, map<int,double>& x)
 {
-	//Se resuelve el sistema de ecuaciones
-	for(int i=minMaxColumnaNoNuloPorFilaEnA.size()-1 ; i>=0 ; i--){
-		//if(i%100==0)cout<<"resolverTriangularSuperiorEsparsa - i: "<<i<<endl;
-		x[i] = b[i];//  cout<<"x["<<i<<"]: "<<x[i]<<endl;
-		for(int j=minMaxColumnaNoNuloPorFilaEnA[i].second ; j>=i ; j--)
-		if(A.find(make_pair(i,j))!=A.end()){
-			if(i!=j){ x[i] = x[i] - A[make_pair(i,j)]*x[j];  cout<<"x["<<j<<"]:"<<x[j]<<" - A["<<i<<","<<j<<"]: "<<A[make_pair(i,j)]<<endl;}
-			else x[i] = x[i] / A[make_pair(i,i)];
-		}
-	}
+    //Se resuelve el sistema de ecuaciones
+    for(int i=minMaxColumnaNoNuloPorFilaEnA.size()-1 ; i>=0 ; i--){
+        //if(i%100==0)cout<<"resolverTriangularSuperiorEsparsa - i: "<<i<<endl;
+        x[i] = b[i];//  cout<<"x["<<i<<"]: "<<x[i]<<endl;
+        for(int j=minMaxColumnaNoNuloPorFilaEnA[i].second ; j>=i ; j--)
+        if(A.find(make_pair(i,j))!=A.end()){
+            if(i!=j){ x[i] = x[i] - A[make_pair(i,j)]*x[j];  cout<<"x["<<j<<"]:"<<x[j]<<" - A["<<i<<","<<j<<"]: "<<A[make_pair(i,j)]<<endl;}
+            else x[i] = x[i] / A[make_pair(i,i)];
+        }
+    }
 }
 /** Resuelve el sistema Ax=b, alojando el resultado en x.
  Precondición: A es cuadrada y triangular inferior. Si A pertenece a R nXn, entonces
@@ -599,30 +607,30 @@ void OperacionesMatriciales::resolverTriangularInferiorEsparsa(map<pair<int,int>
                                     , vector<pair<int,int>>& minMaxColumnaNoNuloPorFilaEnA
                                     , map<int,double>& b, map<int,double>& x)
 {
-	//Se resuelve el sistema de ecuaciones
-	for(int i=0; i<minMaxColumnaNoNuloPorFilaEnA.size(); i++){
-		if(i%100==0)cout<<"resolverTriangularInferiorEsparsa - i: "<<i<<endl;
-		x[i] = b[i];  //cout<<"x["<<i<<"]: "<<x[i]<<endl;
-		for(int j=minMaxColumnaNoNuloPorFilaEnA[i].first; j<i; j++)
-		if(A.find(make_pair(i,j))!=A.end()){
-			if(i!=j) x[i] = x[i] - A[make_pair(i,j)]*x[j];  
-			else x[i] = x[i] / A[make_pair(i,i)];
-		}
-	}   
+    //Se resuelve el sistema de ecuaciones
+    for(int i=0; i<minMaxColumnaNoNuloPorFilaEnA.size(); i++){
+        if(i%100==0)cout<<"resolverTriangularInferiorEsparsa - i: "<<i<<endl;
+        x[i] = b[i];  //cout<<"x["<<i<<"]: "<<x[i]<<endl;
+        for(int j=minMaxColumnaNoNuloPorFilaEnA[i].first; j<i; j++)
+        if(A.find(make_pair(i,j))!=A.end()){
+            if(i!=j) x[i] = x[i] - A[make_pair(i,j)]*x[j];  
+            else x[i] = x[i] / A[make_pair(i,i)];
+        }
+    }   
 }
 
 void OperacionesMatriciales::resolverTriangularInferiorEsparsa(map<pair<int,int>,double>& A
-												, vector<set<int>>& filasNoNuloPorColumnaEnA
-												, vector<set<int>>& columnasNoNuloPorFilaEnA
+                                                , vector<set<int>>& filasNoNuloPorColumnaEnA
+                                                , vector<set<int>>& columnasNoNuloPorFilaEnA
                                     , map<int,double>& b, map<int,double>& x)
 {
     x.clear();
-	//Se resuelve el sistema de ecuaciones
-	for(int i=0; i<columnasNoNuloPorFilaEnA.size(); i++){
-		//if(i%100==0)
-		x[i] = b[i];  //cout<<"x["<<i<<"]: "<<x[i]<<endl;
+    //Se resuelve el sistema de ecuaciones
+    for(int i=0; i<columnasNoNuloPorFilaEnA.size(); i++){
+        //if(i%100==0)
+        x[i] = b[i];  //cout<<"x["<<i<<"]: "<<x[i]<<endl;
         //cout<<"resolverTriangularInferiorEsparsa - i: "<<i<<" - b[i]: "<<b[i]<<endl;
-		for(const int &j:columnasNoNuloPorFilaEnA[i]){
+        for(const int &j:columnasNoNuloPorFilaEnA[i]){
             //cout<<"resolverTriangularInferiorEsparsa - j: "<<j<<" - x[j]: "<<x[j]<<endl;
             if(j>i)break;
             if(A.find(make_pair(i,j))!=A.end()){
@@ -631,5 +639,5 @@ void OperacionesMatriciales::resolverTriangularInferiorEsparsa(map<pair<int,int>
                 //cout<<"resolverTriangularInferiorEsparsa - x[i]: "<<x[i]<<endl;
             }
         }
-	}   
+    }   
 }

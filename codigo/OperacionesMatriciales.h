@@ -8,7 +8,7 @@
 #include <string>
 
 #define EPSILON 0.000001
-#define ES_CASI_CERO(x) (std::abs(x)<=EPSILON)
+#define ES_CASI_CERO(x) (std::abs(x)<EPSILON)
 
 using namespace std;
 
@@ -35,6 +35,7 @@ class OperacionesMatriciales {
 		static void imprimirMatrizEsparsa(map<int,double>& M);
 		static void imprimirMatrizEsparsa(map<pair<int,int>,double>& M);
 		static void transponerMatrizEsparsa(map<pair<int,int>,double>& matrizResultado,map<pair<int,int>,double>& matrizOriginal);
+		static void imprimirMatrizEsparsaProfundidades(map<int,double>& M, int width, int height);
 
 		/**posMultiplicarMatrizEsparsa:
 		Postcondición: r = m*v. resultado es de dimensión m.

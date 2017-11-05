@@ -1,11 +1,11 @@
-#include"ppmloader/ppmloader.h"
-#include<cmath>
-#include<string>
-#include<iostream>
-#include<fstream>
-#include"macros.h"
-using namespace std;
+#include "ppmloader/ppmloader.h"
+#include <cmath>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include "macros.h"
 
+using namespace std;
 
 void CalcularGeometria(uchar* mascara, int height, int width, double& centrox, double& centroy, double& radio) {
     // Encerramos a la esfera en un cuadrado, la mitad de este es el centro.
@@ -82,22 +82,25 @@ void calibrar() {
     int width = 0, height = 0;
     double centrox, centroy, radio;
     PPM_LOADER_PIXEL_TYPE pt = PPM_LOADER_PIXEL_TYPE_INVALID;
-    std::string filename = "ppmImagenes/mate/mate.mask.ppm";
+    std::string filename = "../datos/ppmImagenes/mate/mate.mask.ppm";
     bool ret = LoadPPMFile(&data, &width, &height, &pt, filename.c_str());
     CalcularGeometria(data, height, width, centrox, centroy, radio);
+
+    delete [] data;
 
     DEBUG(width);
     DEBUG(height);
     DEBUG(centrox);
     DEBUG(centroy);
     DEBUG(radio);
-
-    ifstream info("ppmImagenes/mate.txt");
+ 
+    ifstream info("../datos/ppmImagenes/mate.txt");
     int cantImagenes;
     info >> cantImagenes;
+    cout << cantImagenes << endl;
     for(int i = 0; i < cantImagenes; i++) {
 
-        filename = "ppmImagenes/mate/mate.";
+        filename = "../datos/ppmImagenes/mate/mate.";
         filename += to_string(i);
         filename += ".ppm";
         ret = LoadPPMFile(&data, &width, &height, &pt, filename.c_str());
@@ -107,5 +110,12 @@ void calibrar() {
         DEBUG(sy);
         DEBUG(sz);
         cout << sx << " " << sy << " " << sz << endl;
+        delete [] data;
     }
+}
+
+int main(int argc, char const *argv[])
+{
+    calibrar();
+    return 0;
 }
