@@ -107,9 +107,9 @@ int main(int argc, char *argv[]) {
 
 	OperacionesMatriciales::egEsparsa(A,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA,MtXv,zEG);
 	cout<<"zEG.size: "<< zEG.size()<<endl; 
-	cout<<"zEG:"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(zEG);
+	//cout<<"zEG:"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(zEG);
 
-	OperacionesMatriciales::egEsparsa(A,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA,MtXv,zCH);
+	OperacionesMatriciales::resolverConCholeskyEsparsa(A,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA,MtXv,zCH);
 	cout<<"zCH.size: "<< zEG.size()<<endl; 
 	cout<<"zCH:"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(zCH);
 	return 0;

@@ -244,7 +244,7 @@ void OperacionesMatriciales::delimitarAreaDeValores(map<pair<int,int>,double>& M
 			if(max_j == -1 || j > max_j) max_j = j;
 			minMaxColumnaNoNuloPorFila[i] = make_pair(min_j,max_j);
 			minMaxFilaNoNuloPorColumna[j] = make_pair(min_i,max_i);
-		}
+		}else M.erase(p.first);
 	}
 }
 
@@ -487,6 +487,8 @@ void OperacionesMatriciales::choleskyEsparsa(map<pair<int,int>,double>& A
                                             , vector<set<int>>& columnasNoNuloPorFilaEnL
                                             , map<pair<int,int>,double>& L )
 {
+
+    cout<<"choleskyEsparsa INICIO"<<endl;
 	int n = filasNoNuloPorColumnaEnA.size();
     filasNoNuloPorColumnaEnL.clear(); filasNoNuloPorColumnaEnL.resize(n);
     columnasNoNuloPorFilaEnL.clear(); columnasNoNuloPorFilaEnL.resize(n);
@@ -513,27 +515,35 @@ void OperacionesMatriciales::choleskyEsparsa(map<pair<int,int>,double>& A
         }
     }
 
+    
 	for(int j=1; j<n; j++){
+        if(j%100==1)cout<<"choleskyEsparsa - j: "<<j<<endl;
 		double sumaFilaj = 0;
         for(const int &k : columnasNoNuloPorFilaEnL[j]){
             if(k>=j)break;
 			//if(L.find(make_pair(j,k))!=L.end()) 
             sumaFilaj += pow(L[make_pair(j,k)],2);
         }
-        double Ajj = (A.find(make_pair(j,j))!=A.end())?A[make_pair(j,j)]:0;
+        //double Ajj = (A.find(make_pair(j,j))!=A.end())?A[make_pair(j,j)]:0;
+        double Ajj = A[make_pair(j,j)];
         double Ljj = sqrt(Ajj-sumaFilaj);
-        //cout<<"choleskyEsparsa - L_"<<j<<"_"<<j<<": "<<Ljj<<endl;
         if(!ES_CASI_CERO(Ljj)){
             L[make_pair(j,j)]=Ljj;
             filasNoNuloPorColumnaEnL[j].insert(j);
             columnasNoNuloPorFilaEnL[j].insert(j);
 
-            for(int i=j+1;i<n;i++){
+            cout<<"choleskyEsparsa - L["<<j<<","<<j<<"]: "<<Ljj<<endl;
+
+            int max_iA = *(filasNoNuloPorColumnaEnA[j].rbegin());
+            int max_Lj = *(filasNoNuloPorColumnaEnL[j].rbegin());
+            int max_i = max(max_iA,max_Lj);
+            for(int i=j+1;i<=max_i;i++){
+            //for(int i=j+1;i<n;i++){
                 double sumaIxJ = 0;
                 for(const int &k : columnasNoNuloPorFilaEnL[j]){
                     if(k>=j)break;
-                    if(L.find(make_pair(i,k))!=L.end() && L.find(make_pair(j,k))!=L.end()) 
-                        sumaIxJ += L[make_pair(i,k)] * L[make_pair(j,k)];
+                    //if(L.find(make_pair(i,k))!=L.end() && L.find(make_pair(j,k))!=L.end()) 
+                    if(L.find(make_pair(i,k))!=L.end()) sumaIxJ += L[make_pair(i,k)] * L[make_pair(j,k)];
                 }
                 double A_ij = (A.find(make_pair(i,j))!=A.end())?A[make_pair(i,j)]:0;
                 double Lij = (A_ij-sumaIxJ)/ Ljj;
@@ -541,6 +551,7 @@ void OperacionesMatriciales::choleskyEsparsa(map<pair<int,int>,double>& A
                     L[make_pair(i,j)] = Lij;
                     filasNoNuloPorColumnaEnL[j].insert(i);
                     columnasNoNuloPorFilaEnL[i].insert(j);
+                    cout<<"choleskyEsparsa - L["<<i<<","<<j<<"]: "<<Lij<<endl;
                 }
             }
         }
