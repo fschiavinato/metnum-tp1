@@ -1,0 +1,7 @@
+main.o: main.cpp ../../codigo/ppmloader/ppmloader.h \
+ OperacionesMatriciales.h lu.h macros.h
+lu.o: lu.cpp macros.h
+ppmloader.o: ../../codigo/ppmloader/ppmloader.cpp \
+ ../../codigo/ppmloader/ppmloader.h
+OperacionesMatriciales.o: OperacionesMatriciales.cpp \
+ OperacionesMatriciales.h

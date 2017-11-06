@@ -7,20 +7,22 @@
 #include <string>
 #include <string.h>
 #include <sstream>
-#include "ppmloader/ppmloader.h"
+#include <chrono>
+#include <fstream>
+#include "../../codigo/ppmloader/ppmloader.h"
 #include "OperacionesMatriciales.h"
-#include "test/OperacionesMatricialesTest.h"
 #include "lu.h"
 #include "macros.h"
  
-void calcularNormales(vector<vector<double> >& s, vector<uchar*>& imagenes, int width, int height, vector<vector<vector<double> > >& normales);
+void calcularNormales(vector<vector<double> >& s, vector<uchar*>& imagenes, int width, int height, vector<vector<vector<double> > >& normales, uchar* & mascara);
 void poblarMatrizM(map<pair<int,int>,double>& M,map<int,double>& v, int height, int width, vector<vector<vector<double> > >& normales);
 bool guardar_normales(vector<vector<vector<double> > > &normales,int width,int height, std::string filename, vector<int> & lucesElegidas);
-bool guardar_z(map<int,double> &z,int width,int height, std::string filename, vector<int> & lucesElegidas);
+bool guardar_z(map<int,double> &z,int width,int height, std::string filename, vector<int> & lucesElegidas, string metodo);
 void tomar_luces(char const* & argumento, vector<vector<double> > & s, vector<int> &lucesElegidas);
-void cargar_imagenes(vector<uchar*> &imagenes, vector<int> & lucesElegidas, int & width, int &height, string & figura);
+void cargar_imagenes(vector<uchar*> &imagenes, vector<int> & lucesElegidas, int & width, int &height, string & figura, uchar* &mascara);
 void liberar_imagenes(vector<uchar*> &imagenes);
 
+#define ya chrono::high_resolution_clock::now
 
 /** Parámetros esperados: 
 1 - Nombre de la imagen de la cátedra usada (ej., "mate"), o nombre de archivo de imagen de prueba, en caso contrario.
@@ -28,7 +30,9 @@ void liberar_imagenes(vector<uchar*> &imagenes);
 3 - Número de la primer luz usada. Entero del 0 al 11
 4 - Número de la segunda luz usada. Entero del 0 al 11
 5 - Número de la tercer luz usada. Entero del 0 al 11
-6 - "eg" / "chol"
+7 - base
+7- granularidad 
+8 - iteraciones
 */
 // 1-nombre imagen, 2-nombre calibraicon, 3-luces elegidas 1, 4-eg/chol
 // ej: ./tp1 "caballo" "calibracion.txt" 2 5 10 "eg"
@@ -46,18 +50,24 @@ int main(int argc, char const* argv[]) {
   vector<uchar*> imagenes(3); 
   string figura = argv[1]; //nombre de imagen a cargar
   int width, height;
-  cargar_imagenes(imagenes,lucesElegidas,width,height,figura);
+  uchar* mascara;
+  cargar_imagenes(imagenes,lucesElegidas,width,height,figura,mascara);
 
-  cout<<"Iniciando cálculo de normales"<<endl;
-  //pixel*pixel*normal
-  //height = 100;
-  //width = ;
+  int granularidad = atoi(argv[7]);
+  int iteraciones = atoi(argv[8]);
+  int base = atoi(argv[6]);
+  time_t inicio, fin;
+  vector<vector<double> > medidas(iteraciones, vector<double>(2));
+
+  height = base;
+  FILE* fid = fopen("medidas","w");
+
+  for (int i = 0; i < iteraciones; ++i)
+  {
+    
   vector<vector<vector<double> > > normales(height,vector<vector<double> > (width,vector<double>(3))); 
-  calcularNormales(s, imagenes, width, height, normales);
-	cout<<"Finalizando cálculo de normales"<<endl;
+  calcularNormales(s, imagenes, width, height, normales, mascara);
 
-  if(guardar_normales(normales,width,height, figura, lucesElegidas) != true) return 1;
-  liberar_imagenes(imagenes);
 
   int cantPixeles = height*width;
   map<int,double> v;        //size: 2*cantPixeles
@@ -65,63 +75,56 @@ int main(int argc, char const* argv[]) {
   map<pair<int,int>,double> M;  // El pair de la clave representa <Fila,Columna> de cada elemento
   map<pair<int,int>,double> Mt; // El pair de la clave representa <Fila,Columna> de cada elemento
   map<pair<int,int>,double> A;  // El pair de la clave representa <Fila,Columna> de cada elemento
-  //vector<pair<int,int>> mMFilaNoNuloPorColumnaEnA;
-  //vector<pair<int,int>> mMColumnaNoNuloPorFilaEnA;
-
-  cout<<"Armado Matriz M -- Inicio - height: " << height<<endl;
-  cout<<"Armado Matriz M -- Inicio - width: " << width<<endl;
-  cout<<"Armado Matriz M -- Inicio - cantPixeles: " << cantPixeles<<endl;
 
   poblarMatrizM(M, v,height, width, normales);   
   OperacionesMatriciales::transponerMatrizEsparsa(Mt,M);
   OperacionesMatriciales::posMultiplicarMatrizEsparsa(MtXv,Mt,v);
   OperacionesMatriciales::multiplicarMatricesEsparsas(A,Mt,M);
-  cout<<"Armado Matriz M - Inicio - M.size: " << M.size()<<endl;
-  cout<<"Armado Matriz M - Inicio - v.size: " << v.size()<<endl;
-  cout<<"Armado Matriz M - Inicio - Mt.size: " << Mt.size()<<endl;
-  cout<<"Armado Matriz M - Inicio - MtXv.size: " << MtXv.size()<<endl;
-  cout<<"Armado Matriz M - Inicio - A.size: " << A.size()<<endl;
 
-  //cout<<"M:"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(M);
-  //cout<<"Mt:"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(Mt);
-  //cout<<"A:"<<endl; OperacionesMatriciales::imprimirMatrizEsparsa(A);
+  map<int,double> MtXv_chol = MtXv;
+  map<pair<int,int>,double> Aprima = A; // copio A para que lo use el otro metodo.
 
-
-  //OperacionesMatriciales::delimitarAreaDeValores(A,mMFilaNoNuloPorColumnaEnA,mMColumnaNoNuloPorFilaEnA);
-
-  cout<<"INICIO delimitarAreaDeValores"<<endl;
   vector<set<int>> filasNoNuloPorColumnaEnA;
   vector<set<int>> columnasNoNuloPorFilaEnA;
   OperacionesMatriciales::delimitarAreaDeValores(A,cantPixeles,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA);
+ 
+ /////////////////////////////////////////////
+  // eg
+  map<int,double> zEG;
 
-  if (strcmp(argv[6],"eg") == 0)
-  { 
-    map<int,double> zEG;
+  fprintf(fid, "%d ", height);
+  
+  inicio = clock();
+  OperacionesMatriciales::egEsparsa(A,filasNoNuloPorColumnaEnA,
+        columnasNoNuloPorFilaEnA,MtXv,zEG);
+  fin = clock();
+  double temp = double(fin - inicio) / (CLOCKS_PER_SEC);
 
-    cout<<"INICIO egEsparsa::"<<endl;
+  fprintf(fid, "%f ", temp);
+  //medidas[i][0] = temp;
+  
+  //chol
+  map<int,double> zCH;
 
-    OperacionesMatriciales::egEsparsa(A,filasNoNuloPorColumnaEnA,columnasNoNuloPorFilaEnA,MtXv,zEG);
+  inicio = clock();
+  OperacionesMatriciales::resolverConCholeskyEsparsa(Aprima, filasNoNuloPorColumnaEnA,
+          columnasNoNuloPorFilaEnA, MtXv_chol, zCH );
+  fin = clock();
+  temp = double(fin - inicio) / (CLOCKS_PER_SEC);
 
-    cout<<"zEG.size: "<< zEG.size()<<endl; 
-    //cout<<"zEG:"<<endl; OperacionesMatriciales::imprimirMatrizEsparsaProfundidades(zEG, width, height);
-    if(guardar_z(zEG,width,height,figura+".eg", lucesElegidas) != true) return 1;
-  }else{
-    if (strcmp(argv[6],"chol") == 0)
-    {
+  fprintf(fid, "%f\n", temp);
+  //medidas[i][1] = temp;
 
-      map<int,double> zCH;
 
-      cout<<"INICIO choleskyEsparsa::"<<endl;
-      OperacionesMatriciales::resolverConCholeskyEsparsa(A, filasNoNuloPorColumnaEnA,
-          columnasNoNuloPorFilaEnA, MtXv, zCH );
-      cout<<"zCH.size: "<< zCH.size()<<endl; 
-      //cout<<"zCH:"<<endl; OperacionesMatriciales::imprimirMatrizEsparsaProfundidades(zCH, width, height);
-      if(guardar_z(zCH,width,height,figura+".ch", lucesElegidas) != true) return 1;     
-      
-    }else{
-      cout << "Error en la elccion del metodo. eg para gauss y chol para cholesky" << endl;
-    }
+  //////////////////////////  
+
+  height = height + granularidad; 
+
   }
+
+
+  fclose(fid);
+  liberar_imagenes(imagenes);
 
 	return 0;
 }
@@ -150,27 +153,30 @@ void poblarMatrizM(map<pair<int,int>,double>& M,map<int,double>& v, int height, 
 }
 
 
-void calcularNormales(vector<vector<double> >& s, vector<uchar*>& imagenes, int width, int height, vector<vector<vector<double> > >& normales) {
+void calcularNormales(vector<vector<double> >& s, vector<uchar*>& imagenes, int width, int height, vector<vector<vector<double> > >& normales, uchar* & mascara) {
     
     vector<int> p(3);   
 
     descomponerLU(s, 3, 3, p);
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
-            //intensidad Ii
+
+          double color_mascara = ILUM(mascara,i,j);
+
             vector<double> b = {ILUM(imagenes[0],i,j), ILUM(imagenes[1],i,j), ILUM(imagenes[2],i,j)};
             resolverLU(s, 3, 3, p, normales[i][j], b); //resuelvo m.
             double norma = sqrt(pow(normales[i][j][0], 2) + pow(normales[i][j][1], 2) + pow(normales[i][j][3], 2));
-        //finalmente se despeja la norma para el pixel i j
-        if(ES_CASI_CERO(norma)){
-          normales[i][j][0] = 0;
-          normales[i][j][1] = 0;
-          normales[i][j][2] = 0;
-        }else{
-          normales[i][j][0] /= norma;
-          normales[i][j][1] /= norma;
-          normales[i][j][2] /= norma;
-        }
+          //finalmente se despeja la norma para el pixel i j
+            if(ES_CASI_CERO(norma)){
+              normales[i][j][0] = 0;
+              normales[i][j][1] = 0;
+              normales[i][j][2] = 0;
+            }else{
+             normales[i][j][0] /= norma;
+              normales[i][j][1] /= norma;
+              normales[i][j][2] /= norma;
+            }
+
         }
     }
 }
@@ -190,12 +196,12 @@ void tomar_luces(char const* & argumento, vector<vector<double> > & s, vector<in
     }
 }
 
-void cargar_imagenes(vector<uchar*> &imagenes, vector<int> & lucesElegidas, int & width, int &height, string & figura){
+void cargar_imagenes(vector<uchar*> &imagenes, vector<int> & lucesElegidas, int & width, int &height, string & figura, uchar* &mascara){
 
     PPM_LOADER_PIXEL_TYPE pt = PPM_LOADER_PIXEL_TYPE_INVALID;
 
     for(int i = 0; i < lucesElegidas.size(); i++) {
-    string filename = "../datos/ppmImagenes/";
+    string filename = "../../datos/ppmImagenes/";
         filename += figura;
         filename += "/";
         filename += figura;
@@ -207,6 +213,16 @@ void cargar_imagenes(vector<uchar*> &imagenes, vector<int> & lucesElegidas, int 
     
     cout<<"Finalizando carga de imagen: "<<filename<<endl;
     }
+    string filename = "../../datos/ppmImagenes/";
+    filename += figura;
+    filename +="/";
+    filename += figura;
+    filename +=".";
+    filename += "mask";
+    filename += ".ppm";
+
+    LoadPPMFile(&mascara, &width, &height, &pt, filename.c_str());
+
 
 }
 
@@ -262,7 +278,7 @@ bool guardar_normales(vector<vector<vector<double> > > &normales,int width,int h
 
 }
 
-bool guardar_z(map<int,double> &z,int width,int height, std::string filename, vector<int> &lucesElegidas){
+bool guardar_z(map<int,double> &z,int width,int height, std::string filename, vector<int> &lucesElegidas, string metodo){
 
     std::string luces;
 
@@ -271,7 +287,7 @@ bool guardar_z(map<int,double> &z,int width,int height, std::string filename, ve
       luces += to_string(lucesElegidas[i]);
     }
 
-    FILE* fid = fopen((filename+"."+luces+".depth").c_str(),"w");
+    FILE* fid = fopen((filename+"."+luces+"."+metodo+".depth").c_str(),"w");
 
     if(!fid){
         printf("ERROR abrir archivo %s\n",filename.c_str());

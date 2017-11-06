@@ -1,1 +1,49 @@
 \section{Introducción}
+
+En este trabajo práctico abordaremos la temática de la reconstrucción de objetos tridimensionales utilizando de tales objetos fotografías bidimensionales. Para ello, emplearemos técnicas de fotometría estéreo, que derivarán en la aplicación de métodos numéricos de resolución de sistemas de ecuaciones lineales.
+\\
+Contamos con una colección de fotografías correspondientes a distintos objetos. Por cada objeto, contamos con doce fotografías, tomadas cada una desde la misma posición de cámara, pero ubicando la fuente de luz en distintos puntos del espacio. Las doce ubicaciones de la fuente lumínica son las mismas para las fotografías de todos los objetos.
+
+Tal como se detalla en el enunciado del trabajo, es necesario descubrir la posición de las fuentes de iluminación, para lo que se pasa por una etapa de Calibración. 
+\\
+
+Una vez realizada la calibración, se puede pasar a esrtimar la forma tridimensional de alguno de los objetos. Para ello, deben escogerse tres fotografías del mismo objeto, desde tres focos de iluminación distintos, ya conocidos.
+\\
+
+Hecho esto, se debe calcular, para cada píxel de la imagen el vector normal a la superficie del objeto, formando el sistema de ecuaciones (5) del enunciado para cada píxel.
+\\
+
+A continuación, se arma el sistema de ecuaciones general, detallado en las ecuaciones (11) y (12) del enunciado, y se forma con ellos la matriz $M$, a partir de la cual se forma la matriz $A$ $=$ $M$ $^{t}$ $M$. 
+\\
+
+La resolución de los sistemas de ecuaciones se hace con los métodos de Eliminación Gaussiana Clásica y Factorización de Cholesky \cite{burden}.
+\\
+La utilización de estos métodos de resolución exigen condiciones de la matriz en cuestión. A continuación, detallamos el cumplimiento de la matriz $A$ de tales condiciones.
+\\
+
+\textbf{Demostración de que se puede aplicar Eliminación Gaussiana Clásica (sin pivoteo) y Factorización de CHolesky sobre la matriz $A$ $=$ $M$ $^{t}$ $M$.}
+\\
+
+1) \textit{M es inversible}: Se puede ver observando las ecuaciones que la constituyen y notando que, para cualesquiera dos filas de M (cualesquiera dos ecuaciones), va a haber al menos una incógnita en la que una tenga coeficiente nula y la otra no; es decir, para cualesquiera dos filas de M, va a haber al menos una columna en la que una tenga valor 0 y la otra no. \\
+Además, los elementos de la diagonal representan valores de una dimensión de las normales a la superficie. En el contexto del problema, no tiene sentido que este valor sea 0.\\
+Es decir, no habrá columnas nulas en la matriz M. Esto hace que las filas de M sean linealmente independientes, y es hace a M inversible.
+\\
+
+2) Al ser M inversible, lo son también $M$ $^{t}$ y A (por ser producto de inversibles)
+\\
+
+3)\textit{A es simétrica: } (trivial transponiendo($M$ $^{t}$ $M$))\\
+
+\textit{A es definida positiva:} sup $x$ $\in$ $\mathbb{R}$ $^{n}$, $x \ne 0$ 
+arbitrario. \\
+
+x$^{t}$ $A$ $x$  = $x$ $^{t}$ $M$ $^{t}$ $M$ $ x$ $=$ ($Mx$)$^{t}$ 
+ $(M*x)$ = $\|$ $Mx$ $\|$ $>$ $0$ por ser $x$ $\neq$ $0$ y $M$ 
+inversible. \\
+
+Por lo tanto, A es SDP, y por ende, puede aplicársele la factorización de CHolesky.
+\\
+
+4)
+A es simétrica definida positiva $\implies$ (por ej 7/c de la práctica 3) Todas las submatrices principales de A son definidas positivas $\implies$ (por ej 7/b de la práctica 3) Todas las submatrices principales de A son no singulares $\implies$ (por ej 7 de la práctica 2)  A admite factorización LU sin pivoteo (y además es única) - que es equivalente a decir que sobre A se puede aplicar Eliminación Gaussiana Clásica
+\\
